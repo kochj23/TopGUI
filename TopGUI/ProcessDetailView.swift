@@ -2,7 +2,7 @@
 //  ProcessDetailView.swift
 //  TopGUI
 //
-//  Detailed view for individual processes with LCARS styling
+//  Process detail view with modern glassmorphic styling
 //
 //  Created by Jordan Koch on 1/15/2026.
 //  Copyright © 2026 Jordan Koch. All rights reserved.
@@ -20,239 +20,308 @@ struct ProcessDetailView: View {
 
     var body: some View {
         ZStack {
-            LCARSColors.background
+            // Gradient background
+            ModernColors.backgroundGradient
                 .ignoresSafeArea()
 
-            VStack(spacing: 20) {
-                // Header
-                header
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Header
+                    header
 
-                // Process details
-                ScrollView {
-                    VStack(spacing: 20) {
-                        // Basic info
-                        infoPanel
-
-                        // Resource usage
-                        resourcePanel
-
-                        // Memory info
-                        memoryPanel
-
-                        // Control panel
-                        controlPanel
+                    // Info cards
+                    VStack(spacing: 16) {
+                        basicInfoCard
+                        resourceUsageCard
+                        memoryInfoCard
+                        controlCard
                     }
-                    .padding()
+                    .padding(20)
                 }
             }
         }
-        .frame(width: 700, height: 600)
-        .alert("Kill Process?", isPresented: $showKillConfirmation) {
+        .frame(width: 600, height: 700)
+        .alert("Terminate Process?", isPresented: $showKillConfirmation) {
             Button("Cancel", role: .cancel) {}
-            Button("Kill", role: .destructive) {
+            Button("Terminate", role: .destructive) {
                 dataManager.killProcess(process)
                 dismiss()
             }
         } message: {
-            Text("Are you sure you want to kill process \(process.pid) (\(process.command))? This action cannot be undone.")
+            Text("Are you sure you want to terminate process \(process.pid) (\(process.command))? This action cannot be undone.")
         }
     }
 
     private var header: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("PROCESS DETAILS")
-                    .lcarsHeader(color: LCARSColors.orange)
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Process Details")
+                    .modernHeader(size: .large)
 
                 Text(process.command)
-                    .font(.system(size: 16, weight: .bold, design: .monospaced))
-                    .foregroundColor(LCARSColors.blue)
+                    .font(.system(size: 16, weight: .semibold, design: .monospaced))
+                    .foregroundColor(ModernColors.accent)
             }
 
             Spacer()
 
             Button(action: { dismiss() }) {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 24))
-                    .foregroundColor(LCARSColors.red)
+                    .font(.system(size: 28))
+                    .foregroundColor(ModernColors.textSecondary)
             }
             .buttonStyle(.plain)
         }
-        .padding()
-        .background(LCARSColors.panelBackground)
+        .padding(20)
     }
 
-    private var infoPanel: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("BASIC INFORMATION")
-                .font(.system(size: 16, weight: .black, design: .rounded))
-                .foregroundColor(LCARSColors.blue)
-                .textCase(.uppercase)
+    private var basicInfoCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "info.circle.fill")
+                    .font(.system(size: 18))
+                    .foregroundColor(ModernColors.accentBlue)
+
+                Text("Basic Information")
+                    .modernHeader(size: .medium)
+            }
 
             Divider()
-                .background(LCARSColors.blue.opacity(0.3))
+                .background(Color.white.opacity(0.2))
 
-            detailRow(label: "PROCESS ID", value: "\(process.pid)")
-            detailRow(label: "COMMAND", value: process.command)
-            detailRow(label: "USER", value: process.user)
-            detailRow(label: "STATE", value: process.state)
-            detailRow(label: "TIME", value: process.time)
+            VStack(spacing: 12) {
+                detailRow(label: "Process ID", value: "\(process.pid)")
+                detailRow(label: "Command", value: process.command)
+                detailRow(label: "User", value: process.user)
+                detailRow(label: "State", value: process.state)
+                detailRow(label: "Time", value: process.time)
+            }
         }
-        .lcarsPanel(color: LCARSColors.blue)
+        .glassCard()
     }
 
-    private var resourcePanel: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("RESOURCE USAGE")
-                .font(.system(size: 16, weight: .black, design: .rounded))
-                .foregroundColor(LCARSColors.orange)
-                .textCase(.uppercase)
+    private var resourceUsageCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "gauge.high")
+                    .font(.system(size: 18))
+                    .foregroundColor(ModernColors.accent)
+
+                Text("Resource Usage")
+                    .modernHeader(size: .medium)
+            }
 
             Divider()
-                .background(LCARSColors.orange.opacity(0.3))
+                .background(Color.white.opacity(0.2))
 
-            // CPU usage with heat map
-            VStack(alignment: .leading, spacing: 8) {
+            // CPU usage
+            VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Text("CPU USAGE")
-                        .font(.system(size: 12, weight: .bold, design: .monospaced))
-                        .foregroundColor(LCARSColors.textSecondary)
+                    Text("CPU Usage")
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundColor(ModernColors.textSecondary)
+
                     Spacer()
+
                     Text(String(format: "%.1f%%", process.cpuUsage))
-                        .font(.system(size: 16, weight: .bold, design: .monospaced))
-                        .foregroundColor(LCARSColors.heatColor(percentage: process.cpuUsage))
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundColor(ModernColors.heatColor(percentage: process.cpuUsage))
                 }
 
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.black.opacity(0.3))
+                        // Background
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.white.opacity(0.1))
 
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(LCARSColors.heatColor(percentage: process.cpuUsage))
+                        // Progress
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        ModernColors.heatColor(percentage: process.cpuUsage),
+                                        ModernColors.heatColor(percentage: process.cpuUsage).opacity(0.7)
+                                    ],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
                             .frame(width: geometry.size.width * CGFloat(min(process.cpuUsage / 100.0, 1.0)))
-                            .shadow(color: LCARSColors.heatColor(percentage: process.cpuUsage), radius: 5)
+                            .shadow(color: ModernColors.heatColor(percentage: process.cpuUsage).opacity(0.6), radius: 8)
                     }
                 }
-                .frame(height: 20)
+                .frame(height: 24)
             }
 
-            // Memory usage with heat map
-            VStack(alignment: .leading, spacing: 8) {
+            // Memory usage
+            VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Text("MEMORY USAGE")
-                        .font(.system(size: 12, weight: .bold, design: .monospaced))
-                        .foregroundColor(LCARSColors.textSecondary)
+                    Text("Memory Usage")
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundColor(ModernColors.textSecondary)
+
                     Spacer()
+
                     Text(String(format: "%.1f%%", process.memUsage))
-                        .font(.system(size: 16, weight: .bold, design: .monospaced))
-                        .foregroundColor(LCARSColors.heatColor(percentage: process.memUsage))
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundColor(ModernColors.heatColor(percentage: process.memUsage))
                 }
 
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.black.opacity(0.3))
+                        // Background
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.white.opacity(0.1))
 
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(LCARSColors.heatColor(percentage: process.memUsage))
+                        // Progress
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        ModernColors.heatColor(percentage: process.memUsage),
+                                        ModernColors.heatColor(percentage: process.memUsage).opacity(0.7)
+                                    ],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
                             .frame(width: geometry.size.width * CGFloat(min(process.memUsage / 100.0, 1.0)))
-                            .shadow(color: LCARSColors.heatColor(percentage: process.memUsage), radius: 5)
+                            .shadow(color: ModernColors.heatColor(percentage: process.memUsage).opacity(0.6), radius: 8)
                     }
                 }
-                .frame(height: 20)
+                .frame(height: 24)
             }
 
-            detailRow(label: "THREADS", value: "\(process.threads)")
-            detailRow(label: "PORTS", value: "\(process.ports)")
+            HStack(spacing: 20) {
+                statBadge(label: "Threads", value: "\(process.threads)", color: ModernColors.accentBlue)
+                statBadge(label: "Ports", value: "\(process.ports)", color: ModernColors.accentGreen)
+            }
         }
-        .lcarsPanel(color: LCARSColors.orange)
+        .glassCard()
     }
 
-    private var memoryPanel: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("MEMORY DETAILS")
-                .font(.system(size: 16, weight: .black, design: .rounded))
-                .foregroundColor(LCARSColors.violet)
-                .textCase(.uppercase)
+    private var memoryInfoCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "memorychip.fill")
+                    .font(.system(size: 18))
+                    .foregroundColor(ModernColors.accentOrange)
+
+                Text("Memory Details")
+                    .modernHeader(size: .medium)
+            }
 
             Divider()
-                .background(LCARSColors.violet.opacity(0.3))
+                .background(Color.white.opacity(0.2))
 
-            detailRow(label: "PHYSICAL", value: process.memPhys)
-            detailRow(label: "VIRTUAL", value: process.memVirt)
-            detailRow(label: "REGIONS", value: "\(process.memRegions)")
+            VStack(spacing: 12) {
+                detailRow(label: "Physical Memory", value: process.memPhys)
+                detailRow(label: "Virtual Memory", value: process.memVirt)
+                detailRow(label: "Memory Regions", value: "\(process.memRegions)")
+            }
         }
-        .lcarsPanel(color: LCARSColors.violet)
+        .glassCard()
     }
 
-    private var controlPanel: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("PROCESS CONTROL")
-                .font(.system(size: 16, weight: .black, design: .rounded))
-                .foregroundColor(LCARSColors.yellow)
-                .textCase(.uppercase)
+    private var controlCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "slider.horizontal.3")
+                    .font(.system(size: 18))
+                    .foregroundColor(ModernColors.accentGreen)
+
+                Text("Process Control")
+                    .modernHeader(size: .medium)
+            }
 
             Divider()
-                .background(LCARSColors.yellow.opacity(0.3))
+                .background(Color.white.opacity(0.2))
 
             // Priority control
-            HStack {
-                Text("PRIORITY (NICE)")
-                    .font(.system(size: 12, weight: .bold, design: .monospaced))
-                    .foregroundColor(LCARSColors.textSecondary)
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Priority (Nice Value)")
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundColor(ModernColors.textSecondary)
 
-                Spacer()
-
-                HStack(spacing: 10) {
-                    Button("-") {
-                        niceValue = max(-20, niceValue - 1)
+                HStack(spacing: 12) {
+                    Button(action: { niceValue = max(-20, niceValue - 1) }) {
+                        Image(systemName: "minus.circle.fill")
+                            .font(.system(size: 24))
                     }
-                    .buttonStyle(LCARSButtonStyle(color: LCARSColors.blue))
+                    .buttonStyle(ModernButtonStyle(color: ModernColors.accentBlue, style: .filled))
 
                     Text("\(niceValue)")
-                        .font(.system(size: 14, weight: .bold, design: .monospaced))
-                        .foregroundColor(LCARSColors.textPrimary)
-                        .frame(width: 40)
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundColor(ModernColors.textPrimary)
+                        .frame(minWidth: 50)
 
-                    Button("+") {
-                        niceValue = min(20, niceValue + 1)
+                    Button(action: { niceValue = min(20, niceValue + 1) }) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 24))
                     }
-                    .buttonStyle(LCARSButtonStyle(color: LCARSColors.blue))
+                    .buttonStyle(ModernButtonStyle(color: ModernColors.accentBlue, style: .filled))
 
-                    Button("APPLY") {
+                    Spacer()
+
+                    Button(action: {
                         dataManager.changeProcessPriority(process, nice: niceValue)
+                    }) {
+                        Text("Apply")
+                            .font(.system(size: 14, weight: .semibold))
                     }
-                    .buttonStyle(LCARSButtonStyle(color: LCARSColors.yellow))
+                    .buttonStyle(ModernButtonStyle(color: ModernColors.accent, style: .filled))
                 }
             }
 
             Divider()
-                .background(LCARSColors.yellow.opacity(0.3))
+                .background(Color.white.opacity(0.2))
 
-            // Kill button
+            // Terminate button
             Button(action: { showKillConfirmation = true }) {
                 HStack {
                     Image(systemName: "xmark.octagon.fill")
-                    Text("TERMINATE PROCESS")
-                        .font(.system(size: 14, weight: .bold, design: .monospaced))
+                        .font(.system(size: 16))
+
+                    Text("Terminate Process")
+                        .font(.system(size: 14, weight: .semibold))
                 }
                 .frame(maxWidth: .infinity)
+                .padding(.vertical, 4)
             }
-            .buttonStyle(LCARSButtonStyle(color: LCARSColors.red))
+            .buttonStyle(ModernButtonStyle(color: ModernColors.statusCritical, style: .destructive))
         }
-        .lcarsPanel(color: LCARSColors.yellow)
+        .glassCard()
     }
 
     private func detailRow(label: String, value: String) -> some View {
         HStack {
             Text(label)
-                .font(.system(size: 12, weight: .bold, design: .monospaced))
-                .foregroundColor(LCARSColors.textSecondary)
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundColor(ModernColors.textSecondary)
+
             Spacer()
+
             Text(value)
-                .font(.system(size: 14, design: .monospaced))
-                .foregroundColor(LCARSColors.textPrimary)
+                .font(.system(size: 14, weight: .semibold, design: .monospaced))
+                .foregroundColor(ModernColors.textPrimary)
         }
+    }
+
+    private func statBadge(label: String, value: String, color: Color) -> some View {
+        VStack(spacing: 6) {
+            Text(value)
+                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .foregroundColor(color)
+
+            Text(label)
+                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .foregroundColor(ModernColors.textSecondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.05))
+        )
     }
 }

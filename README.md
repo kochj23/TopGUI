@@ -1,20 +1,23 @@
 # TopGUI
 
-**A visually stunning, LCARS-inspired system monitor for macOS**
+**A visually stunning, modern glassmorphic system monitor for macOS**
 
 ![Platform](https://img.shields.io/badge/platform-macOS%2013.0%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.0-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
+![Version](https://img.shields.io/badge/version-2.0.0-purple)
 
-TopGUI brings the futuristic aesthetic of Star Trek: The Next Generation's LCARS interface to system monitoring. It provides real-time visualization of processes, CPU usage, and memory statistics with a beautiful, intuitive dashboard.
+TopGUI provides real-time system monitoring with a beautiful glassmorphic interface inspired by modern macOS design. Features frosted glass cards, purple gradients, and smooth animations for an elegant monitoring experience.
 
 ## Features
 
-### 🎨 LCARS-Inspired Design
-- Colorful rounded panels with ambient glow effects
+### 🎨 Modern Glassmorphic Design
+- Frosted glass cards with blur effects (.ultraThinMaterial)
+- Purple gradient background (deep to light purple)
+- Soft shadows and 3D depth
+- Smooth animations and transitions
 - Heat map visualizations (green → yellow → orange → red)
-- Futuristic typography and color scheme
-- Dark theme with vibrant accents
+- Modern rounded typography
 
 ### 📊 Real-Time System Monitoring
 - **CPU Status**: Total usage with user/system/idle breakdown
@@ -31,14 +34,14 @@ TopGUI brings the futuristic aesthetic of Star Trek: The Next Generation's LCARS
 
 ## Screenshots
 
-*Dashboard View*: Main interface showing CPU/memory panels and process list with LCARS styling
+*Dashboard View*: Modern glassmorphic interface with purple gradients, circular CPU gauge, and frosted glass cards
 
-*Process Detail*: Detailed process view with resource usage heat maps and control options
+*Process Detail*: Clean process detail modal with gradient bars, status badges, and modern controls
 
 ## Installation
 
 ### From DMG (Recommended)
-1. Download `TopGUI-v1.0.0-build1.dmg` from releases
+1. Download `TopGUI-v2.0.0-build2.dmg` from releases
 2. Mount the DMG and drag TopGUI.app to Applications
 3. Launch TopGUI from Applications folder
 
@@ -60,13 +63,13 @@ Build with Xcode 15+ and run on macOS 13.0+
 
 ## How It Works
 
-TopGUI parses output from the native macOS `top` command to gather real-time system statistics. The data is presented in a SwiftUI interface with custom LCARS-inspired styling.
+TopGUI parses output from the native macOS `top` command to gather real-time system statistics. The data is presented in a modern SwiftUI interface with glassmorphic design elements.
 
 ### Architecture
 - **TopDataManager**: Executes `top` command and parses output
-- **ContentView**: Main dashboard with CPU/memory panels and process table
-- **ProcessDetailView**: Detailed process information and controls
-- **LCARSDesign**: Custom design system with colors, panels, and buttons
+- **ContentView**: Main dashboard with glassmorphic cards and gradient background
+- **ProcessDetailView**: Modal detail view with modern controls
+- **ModernDesign**: Glassmorphic design system with purple gradients and frosted glass
 
 ## Security & Permissions
 
@@ -84,11 +87,11 @@ Some operations (kill, renice) may require administrator privileges for processe
 TopGUI/
 ├── TopGUI/
 │   ├── TopGUIApp.swift          # App entry point
-│   ├── ContentView.swift         # Main dashboard
-│   ├── ProcessDetailView.swift   # Process details
+│   ├── ContentView.swift         # Main glassmorphic dashboard
+│   ├── ProcessDetailView.swift   # Process detail modal
 │   ├── TopDataManager.swift      # Data parsing and process control
 │   ├── ProcessInfo.swift         # Data models
-│   ├── LCARSDesign.swift         # Design system
+│   ├── ModernDesign.swift        # Glassmorphic design system
 │   ├── Info.plist               # App configuration
 │   └── TopGUI.entitlements      # Security entitlements
 ├── project.yml                   # Xcodegen configuration
@@ -131,7 +134,11 @@ Future enhancements:
 
 **Created by Jordan Koch**
 
-Inspired by the iconic LCARS interface from Star Trek: The Next Generation. Special thanks to the creators and designers at Paramount for the timeless aesthetic.
+Design inspired by modern glassmorphism trends, macOS Ventura aesthetics, and contemporary monitoring dashboards. Built with SwiftUI and love for beautiful interfaces.
+
+**Version History:**
+- v2.0.0: Modern glassmorphic redesign with purple gradients
+- v1.0.0: Original LCARS Star Trek TNG-inspired design
 
 ## License
 
@@ -164,8 +171,9 @@ For issues, feature requests, or contributions, please open an issue on GitHub.
 ---
 
 **Build Information:**
-- Version: 1.0.0
-- Build: 1
+- Version: 2.0.0
+- Build: 2
 - Build Date: January 15, 2026
+- Design: Modern Glassmorphic
 - Minimum macOS: 13.0
 - Architecture: Universal (Apple Silicon & Intel)

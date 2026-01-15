@@ -10,17 +10,17 @@
 		05A1CB519BCA5D95A7169ECF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE26106E74BD0959BA4C7734 /* ContentView.swift */; };
 		26251AC086FA68213A258B98 /* TopGUIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6406212058129268FD61B022 /* TopGUIApp.swift */; };
 		403AD43E1E0932100B60E555 /* TopDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E203F665BEA9624788856F /* TopDataManager.swift */; };
+		6B9BC5B47A588299A34F91B7 /* ModernDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1709BC378945C536D803B62C /* ModernDesign.swift */; };
 		8FCC6E63BDEF54D448BE4A38 /* ProcessDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2C7C51FA1146AC7FCE1655 /* ProcessDetailView.swift */; };
 		ACFA9751F5CC238A767622DB /* ProcessInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9754DBFCF9EF6DED34A33716 /* ProcessInfo.swift */; };
-		ECC06D3814117ED0E3BAE310 /* LCARSDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB7AAAC4508E05BE18A623A /* LCARSDesign.swift */; };
 		F3E8895537AB6C8A3CCB9B83 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 349C32F1ABFDAD4C2B8E6ABF /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1709BC378945C536D803B62C /* ModernDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernDesign.swift; sourceTree = "<group>"; };
 		3458132509D7F39037749887 /* TopGUI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TopGUI.entitlements; sourceTree = "<group>"; };
 		349C32F1ABFDAD4C2B8E6ABF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4E42668CF54558EA729CED63 /* TopGUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TopGUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		5EB7AAAC4508E05BE18A623A /* LCARSDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LCARSDesign.swift; sourceTree = "<group>"; };
 		6406212058129268FD61B022 /* TopGUIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopGUIApp.swift; sourceTree = "<group>"; };
 		6B2C7C51FA1146AC7FCE1655 /* ProcessDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessDetailView.swift; sourceTree = "<group>"; };
 		81E203F665BEA9624788856F /* TopDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopDataManager.swift; sourceTree = "<group>"; };
@@ -36,7 +36,7 @@
 				349C32F1ABFDAD4C2B8E6ABF /* Assets.xcassets */,
 				AE26106E74BD0959BA4C7734 /* ContentView.swift */,
 				E996840DD5163D17FBAFB2AC /* Info.plist */,
-				5EB7AAAC4508E05BE18A623A /* LCARSDesign.swift */,
+				1709BC378945C536D803B62C /* ModernDesign.swift */,
 				6B2C7C51FA1146AC7FCE1655 /* ProcessDetailView.swift */,
 				9754DBFCF9EF6DED34A33716 /* ProcessInfo.swift */,
 				81E203F665BEA9624788856F /* TopDataManager.swift */,
@@ -128,7 +128,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				05A1CB519BCA5D95A7169ECF /* ContentView.swift in Sources */,
-				ECC06D3814117ED0E3BAE310 /* LCARSDesign.swift in Sources */,
+				6B9BC5B47A588299A34F91B7 /* ModernDesign.swift in Sources */,
 				8FCC6E63BDEF54D448BE4A38 /* ProcessDetailView.swift in Sources */,
 				ACFA9751F5CC238A767622DB /* ProcessInfo.swift in Sources */,
 				403AD43E1E0932100B60E555 /* TopDataManager.swift in Sources */,
@@ -201,7 +201,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TopGUI/TopGUI.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = TopGUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -209,7 +209,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUI;
 				PRODUCT_NAME = TopGUI;
 				SDKROOT = macosx;
@@ -286,7 +286,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TopGUI/TopGUI.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = TopGUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -294,7 +294,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUI;
 				PRODUCT_NAME = TopGUI;
 				SDKROOT = macosx;
