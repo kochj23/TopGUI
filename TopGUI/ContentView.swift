@@ -280,44 +280,53 @@ struct ContentView: View {
                 Spacer()
             }
 
-            // Three mini dials for load averages
-            HStack(spacing: 16) {
-                VStack(spacing: 6) {
-                    MiniGauge(
+            // Three larger dials for load averages
+            HStack(spacing: 12) {
+                VStack(spacing: 4) {
+                    CircularGauge(
                         value: dataManager.systemStats.loadPercentage(cores: dataManager.systemStats.cpuCores),
-                        color: ModernColors.statusLow
+                        color: ModernColors.statusLow,
+                        size: 65,
+                        lineWidth: 7,
+                        showValue: false
                     )
                     Text("1 min")
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .font(.system(size: 9, weight: .medium, design: .rounded))
                         .foregroundColor(ModernColors.textSecondary)
                     Text(String(format: "%.1f", dataManager.systemStats.loadAvg1min))
-                        .font(.system(size: 12, weight: .bold, design: .monospaced))
+                        .font(.system(size: 13, weight: .bold, design: .monospaced))
                         .foregroundColor(ModernColors.statusLow)
                 }
 
-                VStack(spacing: 6) {
-                    MiniGauge(
+                VStack(spacing: 4) {
+                    CircularGauge(
                         value: dataManager.systemStats.cpuCores > 0 ? min((dataManager.systemStats.loadAvg5min / Double(dataManager.systemStats.cpuCores)) * 100.0, 100.0) : 0,
-                        color: ModernColors.statusMedium
+                        color: ModernColors.statusMedium,
+                        size: 65,
+                        lineWidth: 7,
+                        showValue: false
                     )
                     Text("5 min")
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .font(.system(size: 9, weight: .medium, design: .rounded))
                         .foregroundColor(ModernColors.textSecondary)
                     Text(String(format: "%.1f", dataManager.systemStats.loadAvg5min))
-                        .font(.system(size: 12, weight: .bold, design: .monospaced))
+                        .font(.system(size: 13, weight: .bold, design: .monospaced))
                         .foregroundColor(ModernColors.statusMedium)
                 }
 
-                VStack(spacing: 6) {
-                    MiniGauge(
+                VStack(spacing: 4) {
+                    CircularGauge(
                         value: dataManager.systemStats.cpuCores > 0 ? min((dataManager.systemStats.loadAvg15min / Double(dataManager.systemStats.cpuCores)) * 100.0, 100.0) : 0,
-                        color: ModernColors.teal
+                        color: ModernColors.teal,
+                        size: 65,
+                        lineWidth: 7,
+                        showValue: false
                     )
                     Text("15 min")
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .font(.system(size: 9, weight: .medium, design: .rounded))
                         .foregroundColor(ModernColors.textSecondary)
                     Text(String(format: "%.1f", dataManager.systemStats.loadAvg15min))
-                        .font(.system(size: 12, weight: .bold, design: .monospaced))
+                        .font(.system(size: 13, weight: .bold, design: .monospaced))
                         .foregroundColor(ModernColors.teal)
                 }
             }
