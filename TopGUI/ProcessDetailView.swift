@@ -20,9 +20,8 @@ struct ProcessDetailView: View {
 
     var body: some View {
         ZStack {
-            // Gradient background
-            ModernColors.backgroundGradient
-                .ignoresSafeArea()
+            // Glassmorphic background with floating blobs
+            GlassmorphicBackground()
 
             ScrollView {
                 VStack(spacing: 20) {

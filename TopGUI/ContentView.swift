@@ -23,9 +23,8 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            // Gradient background
-            ModernColors.backgroundGradient
-                .ignoresSafeArea()
+            // Glassmorphic background with floating blobs
+            GlassmorphicBackground()
 
             VStack(spacing: 20) {
                 // Header
