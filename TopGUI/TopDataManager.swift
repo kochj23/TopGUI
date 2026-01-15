@@ -19,6 +19,7 @@ class TopDataManager: ObservableObject {
 
     private var updateTimer: Timer?
     private var topProcess: Process?
+    private var updateCounter: Int = 0
 
     init() {
         getCPUCoreCount()
@@ -59,19 +60,27 @@ class TopDataManager: ObservableObject {
 
         // Update every second for real-time data
         updateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.fetchTopData()
-            self?.fetchPerCoreCPU()
-            self?.fetchVMStat()
-            self?.fetchIOStat()
-            self?.fetchNetworkStats()
-            self?.fetchSwapUsage()
+            guard let self = self else { return }
+
+            self.updateCounter += 1
+
+            self.fetchTopData()
+            self.fetchPerCoreCPU()
+            self.fetchVMStat()
+            self.fetchNetworkStats()
+            self.fetchSwapUsage()
+
+            // Only fetch disk usage every 5 minutes (300 seconds)
+            if self.updateCounter % 300 == 0 {
+                self.fetchIOStat()
+            }
         }
 
         // Initial fetch
         fetchTopData()
         fetchPerCoreCPU()
         fetchVMStat()
-        fetchIOStat()
+        fetchIOStat() // Fetch immediately on startup
         fetchNetworkStats()
         fetchSwapUsage()
     }
@@ -89,7 +98,7 @@ class TopDataManager: ObservableObject {
         let pipe = Pipe()
 
         process.executableURL = URL(fileURLWithPath: "/usr/bin/top")
-        process.arguments = ["-l", "1", "-n", "30", "-stats", "pid,command,cpu,mem,time,th,ports,mreg,rprvt,vsize,user,state"]
+        process.arguments = ["-l", "2", "-n", "30", "-o", "cpu", "-stats", "pid,command,cpu,mem,time,th,ports,mreg,rprvt,vsize,user,state"]
         process.standardOutput = pipe
         process.standardError = pipe
 

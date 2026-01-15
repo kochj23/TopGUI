@@ -352,16 +352,18 @@ struct ContentView: View {
                 Spacer()
             }
 
-            // Single dial showing top 5 vs rest
+            // Single dial showing % of total CPU capacity used by top 5
             let top5CPU = dataManager.processes.prefix(5).reduce(0.0) { $0 + $1.cpuUsage }
+            let totalCapacity = Double(dataManager.systemStats.cpuCores) * 100.0
+            let percentOfCapacity = totalCapacity > 0 ? (top5CPU / totalCapacity) * 100.0 : 0
             HStack {
                 CircularGauge(
-                    value: min(top5CPU, 100.0),
+                    value: min(percentOfCapacity, 100.0),
                     color: ModernColors.orange,
                     size: 80,
                     lineWidth: 8,
                     showValue: true,
-                    label: "top 5"
+                    label: "capacity"
                 )
 
                 Spacer()
@@ -638,16 +640,17 @@ struct ContentView: View {
                 Spacer()
             }
 
-            // Dial showing thread utilization
+            // Dial showing overall system CPU usage
             HStack {
-                let threadPercent = dataManager.systemStats.cpuCores > 0 ? min((Double(dataManager.systemStats.threads) / Double(dataManager.systemStats.cpuCores * 100)) * 100.0, 100.0) : 0
+                let systemCPU = dataManager.systemStats.totalCPU
 
                 CircularGauge(
-                    value: threadPercent,
-                    color: ModernColors.accentBlue,
+                    value: systemCPU,
+                    color: ModernColors.heatColor(percentage: systemCPU),
                     size: 80,
                     lineWidth: 8,
-                    showValue: false
+                    showValue: true,
+                    label: "system"
                 )
 
                 Spacer()
@@ -655,12 +658,8 @@ struct ContentView: View {
                 VStack(alignment: .trailing, spacing: 6) {
                     miniStatRow(label: "Cores", value: "\(dataManager.systemStats.cpuCores)", color: ModernColors.cyan)
                     miniStatRow(label: "Threads", value: "\(dataManager.systemStats.threads)", color: ModernColors.purple)
-                    if dataManager.systemStats.cpuTemperature > 0 {
-                        miniStatRow(label: "Temp", value: String(format: "%.1f°C", dataManager.systemStats.cpuTemperature), color: ModernColors.statusHigh)
-                    }
-                    if dataManager.systemStats.cpuFrequency > 0 {
-                        miniStatRow(label: "Frequency", value: String(format: "%.2f GHz", dataManager.systemStats.cpuFrequency), color: ModernColors.accentBlue)
-                    }
+                    miniStatRow(label: "Processes", value: "\(dataManager.systemStats.processes)", color: ModernColors.purple)
+                    miniStatRow(label: "Running", value: "\(dataManager.systemStats.runningProcesses)", color: ModernColors.statusLow)
                 }
             }
         }
@@ -738,6 +737,7 @@ struct ContentView: View {
                                 value: disk.percentUsed,
                                 color: ModernColors.heatColor(percentage: disk.percentUsed)
                             )
+                            .id(disk.mountPoint) // Stable ID prevents recreation
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(disk.name)
