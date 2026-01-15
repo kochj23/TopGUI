@@ -21,7 +21,32 @@ class TopDataManager: ObservableObject {
     private var topProcess: Process?
 
     init() {
+        getCPUCoreCount()
         startMonitoring()
+    }
+
+    private func getCPUCoreCount() {
+        let process = Process()
+        let pipe = Pipe()
+
+        process.executableURL = URL(fileURLWithPath: "/usr/sbin/sysctl")
+        process.arguments = ["-n", "hw.ncpu"]
+        process.standardOutput = pipe
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines),
+               let cores = Int(output) {
+                DispatchQueue.main.async {
+                    self.systemStats.cpuCores = cores
+                }
+            }
+        } catch {
+            print("Failed to get CPU core count: \(error)")
+        }
     }
 
     deinit {
@@ -35,10 +60,18 @@ class TopDataManager: ObservableObject {
         // Update every second for real-time data
         updateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             self?.fetchTopData()
+            self?.fetchPerCoreCPU()
+            self?.fetchVMStat()
+            self?.fetchIOStat()
+            self?.fetchNetworkStats()
         }
 
         // Initial fetch
         fetchTopData()
+        fetchPerCoreCPU()
+        fetchVMStat()
+        fetchIOStat()
+        fetchNetworkStats()
     }
 
     func stopMonitoring() {
@@ -324,6 +357,228 @@ class TopDataManager: ObservableObject {
         } catch {
             DispatchQueue.main.async {
                 self.errorMessage = "Failed to change priority for process \(process.pid): \(error.localizedDescription)"
+            }
+        }
+    }
+
+    // MARK: - Per-Core CPU Monitoring
+    private func fetchPerCoreCPU() {
+        let process = Process()
+        let pipe = Pipe()
+
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/top")
+        process.arguments = ["-l", "2", "-n", "0", "-stats", "cpu"]
+        process.standardOutput = pipe
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let output = String(data: data, encoding: .utf8) {
+                parsePerCoreCPU(output)
+            }
+        } catch {
+            // Silent fail - not critical
+        }
+    }
+
+    private func parsePerCoreCPU(_ output: String) {
+        let lines = output.components(separatedBy: .newlines)
+        var coreUsages: [Double] = []
+
+        for line in lines {
+            if line.contains("CPU usage:") {
+                let components = line.components(separatedBy: ", ")
+                for component in components {
+                    if component.contains("%") && !component.contains("user") && !component.contains("sys") && !component.contains("idle") {
+                        if let value = extractPercentage(from: component) {
+                            coreUsages.append(value)
+                        }
+                    }
+                }
+            }
+        }
+
+        if !coreUsages.isEmpty {
+            DispatchQueue.main.async {
+                self.systemStats.perCoreCPU = coreUsages
+            }
+        }
+    }
+
+    // MARK: - VM Stat (Memory Pressure)
+    private func fetchVMStat() {
+        let process = Process()
+        let pipe = Pipe()
+
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/vm_stat")
+        process.standardOutput = pipe
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let output = String(data: data, encoding: .utf8) {
+                parseVMStat(output)
+            }
+        } catch {
+            // Silent fail
+        }
+    }
+
+    private func parseVMStat(_ output: String) {
+        let lines = output.components(separatedBy: .newlines)
+        var stats = self.systemStats
+
+        for line in lines {
+            if line.contains("Pages active:") {
+                stats.memPagesActive = extractMemory(from: line) ?? ""
+            } else if line.contains("Pages inactive:") {
+                stats.memPagesInactive = extractMemory(from: line) ?? ""
+            } else if line.contains("Pages wired down:") {
+                stats.memPagesWired = extractMemory(from: line) ?? ""
+            } else if line.contains("Pages free:") {
+                stats.memPagesFree = extractMemory(from: line) ?? ""
+            } else if line.contains("Pages speculative:") {
+                stats.memPagesSpeculative = extractMemory(from: line) ?? ""
+            } else if line.contains("Pages purgeable:") {
+                stats.memPagesPurgeable = extractMemory(from: line) ?? ""
+            } else if line.contains("Pages stored in compressor:") {
+                stats.memPagesCompressed = extractMemory(from: line) ?? ""
+            } else if line.contains("Translation faults:") {
+                stats.memPageFaults = extractMemory(from: line) ?? ""
+            } else if line.contains("Pages copy-on-write:") {
+                stats.memCOW = extractMemory(from: line) ?? ""
+            } else if line.contains("Pageins:") {
+                stats.memPageins = extractMemory(from: line) ?? ""
+            } else if line.contains("Pageouts:") {
+                stats.memPageouts = extractMemory(from: line) ?? ""
+            }
+        }
+
+        DispatchQueue.main.async {
+            self.systemStats = stats
+        }
+    }
+
+    // MARK: - IO Stat (Disk Statistics)
+    private func fetchIOStat() {
+        let process = Process()
+        let pipe = Pipe()
+
+        process.executableURL = URL(fileURLWithPath: "/usr/sbin/iostat")
+        process.arguments = ["-d", "-w", "1", "-c", "1"]
+        process.standardOutput = pipe
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let output = String(data: data, encoding: .utf8) {
+                parseIOStat(output)
+            }
+        } catch {
+            // Silent fail
+        }
+    }
+
+    private func parseIOStat(_ output: String) {
+        let lines = output.components(separatedBy: .newlines)
+        var diskStats: [DiskStats] = []
+
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard !trimmed.isEmpty,
+                  !trimmed.starts(with: "disk"),
+                  trimmed.contains("disk") else {
+                continue
+            }
+
+            let components = trimmed.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
+            guard components.count >= 6 else { continue }
+
+            let diskName = components[0]
+            let readMBps = Double(components[1]) ?? 0.0
+            let writeMBps = Double(components[2]) ?? 0.0
+            let readOps = Int(components[3]) ?? 0
+            let writeOps = Int(components[4]) ?? 0
+            let utilization = Double(components[5]) ?? 0.0
+
+            diskStats.append(DiskStats(
+                name: diskName,
+                readMBps: readMBps,
+                writeMBps: writeMBps,
+                readOps: readOps,
+                writeOps: writeOps,
+                utilization: utilization
+            ))
+        }
+
+        if !diskStats.isEmpty {
+            DispatchQueue.main.async {
+                self.systemStats.disks = diskStats
+            }
+        }
+    }
+
+    // MARK: - Network Statistics
+    private func fetchNetworkStats() {
+        let process = Process()
+        let pipe = Pipe()
+
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/netstat")
+        process.arguments = ["-ib", "-w", "1"]
+        process.standardOutput = pipe
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let output = String(data: data, encoding: .utf8) {
+                parseNetworkStats(output)
+            }
+        } catch {
+            // Silent fail
+        }
+    }
+
+    private func parseNetworkStats(_ output: String) {
+        let lines = output.components(separatedBy: .newlines)
+        var interfaces: [NetworkInterface] = []
+
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard !trimmed.isEmpty,
+                  !trimmed.starts(with: "Name"),
+                  (trimmed.starts(with: "en") || trimmed.starts(with: "lo")) else {
+                continue
+            }
+
+            let components = trimmed.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
+            guard components.count >= 10 else { continue }
+
+            let name = components[0]
+            let packetsIn = Int(components[4]) ?? 0
+            let bytesIn = Double(components[6]) ?? 0.0
+            let packetsOut = Int(components[7]) ?? 0
+            let bytesOut = Double(components[9]) ?? 0.0
+
+            interfaces.append(NetworkInterface(
+                name: name,
+                downloadMBps: bytesIn / 1_048_576.0, // Convert to MB
+                uploadMBps: bytesOut / 1_048_576.0,
+                packetsIn: packetsIn,
+                packetsOut: packetsOut
+            ))
+        }
+
+        if !interfaces.isEmpty {
+            DispatchQueue.main.async {
+                self.systemStats.networkInterfaces = interfaces
             }
         }
     }

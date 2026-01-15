@@ -16,10 +16,9 @@ struct TopGUIApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(dataManager)
-                .frame(minWidth: 1200, minHeight: 800)
+                .frame(minWidth: 1400, minHeight: 1000)
         }
         .windowStyle(.hiddenTitleBar)
-        .windowResizability(.contentSize)
         .commands {
             CommandGroup(replacing: .newItem) {}
         }

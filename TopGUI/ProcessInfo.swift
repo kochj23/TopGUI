@@ -30,6 +30,25 @@ struct ProcessInfo: Identifiable, Equatable {
     }
 }
 
+struct DiskStats: Identifiable {
+    let id = UUID()
+    let name: String
+    let readMBps: Double
+    let writeMBps: Double
+    let readOps: Int
+    let writeOps: Int
+    let utilization: Double
+}
+
+struct NetworkInterface: Identifiable {
+    let id = UUID()
+    let name: String
+    let downloadMBps: Double
+    let uploadMBps: Double
+    let packetsIn: Int
+    let packetsOut: Int
+}
+
 struct SystemStats {
     var cpuUser: Double = 0.0
     var cpuSystem: Double = 0.0
@@ -61,11 +80,69 @@ struct SystemStats {
     var diskReads: String = ""
     var diskWrites: String = ""
 
+    // CPU core count
+    var cpuCores: Int = 0
+
+    // Per-core CPU usage (array of percentages)
+    var perCoreCPU: [Double] = []
+
+    // CPU temperature and frequency
+    var cpuTemperature: Double = 0.0 // Celsius
+    var cpuFrequency: Double = 0.0   // GHz
+
+    // Memory pressure details from vm_stat
+    var memPagesActive: String = ""
+    var memPagesInactive: String = ""
+    var memPagesWired: String = ""
+    var memPagesFree: String = ""
+    var memPagesSpeculative: String = ""
+    var memPagesPurgeable: String = ""
+    var memPagesCompressed: String = ""
+    var memPageFaults: String = ""
+    var memCOW: String = ""
+    var memPageins: String = ""
+    var memPageouts: String = ""
+
+    // Per-disk statistics
+    var disks: [DiskStats] = []
+
+    // Per-interface network bandwidth
+    var networkInterfaces: [NetworkInterface] = []
+
     var totalCPU: Double {
         return cpuUser + cpuSystem
     }
 
     var cpuIdlePercentage: Double {
         return cpuIdle
+    }
+
+    // Calculate memory usage percentage from strings like "15G used" and "1G unused"
+    var memoryUsagePercentage: Double {
+        let usedGB = parseMemoryToGB(memPhysUsed)
+        let freeGB = parseMemoryToGB(memPhysFree)
+        let total = usedGB + freeGB
+        return total > 0 ? (usedGB / total) * 100.0 : 0.0
+    }
+
+    private func parseMemoryToGB(_ memString: String) -> Double {
+        guard !memString.isEmpty else { return 0.0 }
+        let numStr = memString.filter { $0.isNumber || $0 == "." }
+        guard let num = Double(numStr) else { return 0.0 }
+
+        if memString.contains("G") {
+            return num
+        } else if memString.contains("M") {
+            return num / 1024.0
+        } else if memString.contains("K") {
+            return num / (1024.0 * 1024.0)
+        }
+        return num
+    }
+
+    // Load average as percentage (assume 100% = number of CPU cores)
+    func loadPercentage(cores: Int) -> Double {
+        let avgLoad = loadAvg1min
+        return cores > 0 ? min((avgLoad / Double(cores)) * 100.0, 100.0) : 0.0
     }
 }

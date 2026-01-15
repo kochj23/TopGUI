@@ -286,3 +286,73 @@ struct HexagonShape: Shape {
         return path
     }
 }
+
+// Reusable circular gauge component
+struct CircularGauge: View {
+    let value: Double // 0-100
+    let color: Color
+    let size: CGFloat
+    let lineWidth: CGFloat
+    let showValue: Bool
+    let label: String?
+
+    init(value: Double, color: Color, size: CGFloat = 80, lineWidth: CGFloat = 8, showValue: Bool = true, label: String? = nil) {
+        self.value = value
+        self.color = color
+        self.size = size
+        self.lineWidth = lineWidth
+        self.showValue = showValue
+        self.label = label
+    }
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(Color.white.opacity(0.1), lineWidth: lineWidth)
+
+            Circle()
+                .trim(from: 0, to: min(value / 100.0, 1.0))
+                .stroke(
+                    color,
+                    style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
+                )
+                .rotationEffect(.degrees(-90))
+                .shadow(color: color.opacity(0.6), radius: 6)
+
+            if showValue {
+                VStack(spacing: 2) {
+                    Text(String(format: "%.0f", value))
+                        .font(.system(size: size > 60 ? 24 : 16, weight: .bold, design: .rounded))
+                        .foregroundColor(ModernColors.textPrimary)
+
+                    if let label = label {
+                        Text(label)
+                            .font(.system(size: size > 60 ? 10 : 8, weight: .medium, design: .rounded))
+                            .foregroundColor(ModernColors.textSecondary)
+                    }
+                }
+            }
+        }
+        .frame(width: size, height: size)
+    }
+}
+
+// Mini circular gauge (for compact cards)
+struct MiniGauge: View {
+    let value: Double
+    let color: Color
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(Color.white.opacity(0.1), lineWidth: 4)
+
+            Circle()
+                .trim(from: 0, to: min(value / 100.0, 1.0))
+                .stroke(color, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+                .shadow(color: color.opacity(0.5), radius: 3)
+        }
+        .frame(width: 40, height: 40)
+    }
+}

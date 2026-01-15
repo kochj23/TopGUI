@@ -52,10 +52,21 @@ struct ContentView: View {
                         topMemoryProcessesCard
                         swapUsageCard
 
-                        // Row 3: Process States, Network Stats, Disk I/O
+                        // Row 3: Process States, Memory Pressure, CPU Cores Info
                         processStatesCard
-                        networkStatsCard
-                        diskIOCard
+                        memoryPressureCard
+                        cpuCoresInfoCard
+                    }
+                    .padding(.horizontal, 20)
+
+                    // Per-Core CPU Grid (full width)
+                    perCoreCPUCard
+                        .padding(.horizontal, 20)
+
+                    // Disk and Network (full width, side by side)
+                    HStack(spacing: 16) {
+                        diskActivityCard
+                        networkBandwidthCard
                     }
                     .padding(.horizontal, 20)
 
@@ -205,14 +216,28 @@ struct ContentView: View {
                     .modernHeader(size: .medium)
 
                 Spacer()
+
+                Text(String(format: "%.0f%%", dataManager.systemStats.memoryUsagePercentage))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundColor(ModernColors.heatColor(percentage: dataManager.systemStats.memoryUsagePercentage))
             }
 
-            VStack(spacing: 8) {
-                miniStatRow(label: "Used", value: dataManager.systemStats.memPhysUsed, color: ModernColors.statusHigh)
-                miniStatRow(label: "Free", value: dataManager.systemStats.memPhysFree, color: ModernColors.statusLow)
-                miniStatRow(label: "Wired", value: dataManager.systemStats.memWired, color: ModernColors.cyan)
-                if !dataManager.systemStats.memCompressed.isEmpty {
-                    miniStatRow(label: "Compressed", value: dataManager.systemStats.memCompressed, color: ModernColors.purple)
+            // Circular gauge
+            HStack {
+                CircularGauge(
+                    value: dataManager.systemStats.memoryUsagePercentage,
+                    color: ModernColors.heatColor(percentage: dataManager.systemStats.memoryUsagePercentage),
+                    size: 100,
+                    lineWidth: 10,
+                    showValue: false
+                )
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 6) {
+                    miniStatRow(label: "Used", value: dataManager.systemStats.memPhysUsed, color: ModernColors.statusHigh)
+                    miniStatRow(label: "Free", value: dataManager.systemStats.memPhysFree, color: ModernColors.statusLow)
+                    miniStatRow(label: "Wired", value: dataManager.systemStats.memWired, color: ModernColors.cyan)
                 }
             }
         }
@@ -233,10 +258,46 @@ struct ContentView: View {
                 Spacer()
             }
 
-            VStack(spacing: 8) {
-                miniStatRow(label: "1 min", value: String(format: "%.2f", dataManager.systemStats.loadAvg1min), color: ModernColors.statusLow)
-                miniStatRow(label: "5 min", value: String(format: "%.2f", dataManager.systemStats.loadAvg5min), color: ModernColors.statusMedium)
-                miniStatRow(label: "15 min", value: String(format: "%.2f", dataManager.systemStats.loadAvg15min), color: ModernColors.teal)
+            // Three mini dials for load averages
+            HStack(spacing: 16) {
+                VStack(spacing: 6) {
+                    MiniGauge(
+                        value: dataManager.systemStats.loadPercentage(cores: dataManager.systemStats.cpuCores),
+                        color: ModernColors.statusLow
+                    )
+                    Text("1 min")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundColor(ModernColors.textSecondary)
+                    Text(String(format: "%.2f", dataManager.systemStats.loadAvg1min))
+                        .font(.system(size: 12, weight: .bold, design: .monospaced))
+                        .foregroundColor(ModernColors.statusLow)
+                }
+
+                VStack(spacing: 6) {
+                    MiniGauge(
+                        value: dataManager.systemStats.cpuCores > 0 ? min((dataManager.systemStats.loadAvg5min / Double(dataManager.systemStats.cpuCores)) * 100.0, 100.0) : 0,
+                        color: ModernColors.statusMedium
+                    )
+                    Text("5 min")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundColor(ModernColors.textSecondary)
+                    Text(String(format: "%.2f", dataManager.systemStats.loadAvg5min))
+                        .font(.system(size: 12, weight: .bold, design: .monospaced))
+                        .foregroundColor(ModernColors.statusMedium)
+                }
+
+                VStack(spacing: 6) {
+                    MiniGauge(
+                        value: dataManager.systemStats.cpuCores > 0 ? min((dataManager.systemStats.loadAvg15min / Double(dataManager.systemStats.cpuCores)) * 100.0, 100.0) : 0,
+                        color: ModernColors.teal
+                    )
+                    Text("15 min")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundColor(ModernColors.textSecondary)
+                    Text(String(format: "%.2f", dataManager.systemStats.loadAvg15min))
+                        .font(.system(size: 12, weight: .bold, design: .monospaced))
+                        .foregroundColor(ModernColors.teal)
+                }
             }
         }
         .glassCard()
@@ -256,24 +317,26 @@ struct ContentView: View {
                 Spacer()
             }
 
-            VStack(spacing: 6) {
+            VStack(spacing: 8) {
                 ForEach(Array(dataManager.processes.prefix(5).enumerated()), id: \.element.id) { index, process in
                     HStack(spacing: 8) {
-                        Text("\(index + 1)")
-                            .font(.system(size: 12, weight: .bold, design: .monospaced))
-                            .foregroundColor(ModernColors.textTertiary)
-                            .frame(width: 20)
+                        MiniGauge(
+                            value: process.cpuUsage,
+                            color: ModernColors.heatColor(percentage: process.cpuUsage)
+                        )
 
-                        Text(process.command)
-                            .font(.system(size: 11, design: .monospaced))
-                            .foregroundColor(ModernColors.textPrimary)
-                            .lineLimit(1)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(process.command)
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .foregroundColor(ModernColors.textPrimary)
+                                .lineLimit(1)
+
+                            Text(String(format: "%.1f%% CPU", process.cpuUsage))
+                                .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                                .foregroundColor(ModernColors.heatColor(percentage: process.cpuUsage))
+                        }
 
                         Spacer()
-
-                        Text(String(format: "%.1f%%", process.cpuUsage))
-                            .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                            .foregroundColor(ModernColors.heatColor(percentage: process.cpuUsage))
                     }
                 }
             }
@@ -295,24 +358,26 @@ struct ContentView: View {
                 Spacer()
             }
 
-            VStack(spacing: 6) {
+            VStack(spacing: 8) {
                 ForEach(Array(dataManager.processes.sorted { $0.memUsage > $1.memUsage }.prefix(5).enumerated()), id: \.element.id) { index, process in
                     HStack(spacing: 8) {
-                        Text("\(index + 1)")
-                            .font(.system(size: 12, weight: .bold, design: .monospaced))
-                            .foregroundColor(ModernColors.textTertiary)
-                            .frame(width: 20)
+                        MiniGauge(
+                            value: process.memUsage,
+                            color: ModernColors.heatColor(percentage: process.memUsage)
+                        )
 
-                        Text(process.command)
-                            .font(.system(size: 11, design: .monospaced))
-                            .foregroundColor(ModernColors.textPrimary)
-                            .lineLimit(1)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(process.command)
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .foregroundColor(ModernColors.textPrimary)
+                                .lineLimit(1)
+
+                            Text(String(format: "%.1f%% Memory", process.memUsage))
+                                .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                                .foregroundColor(ModernColors.heatColor(percentage: process.memUsage))
+                        }
 
                         Spacer()
-
-                        Text(String(format: "%.1f%%", process.memUsage))
-                            .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                            .foregroundColor(ModernColors.heatColor(percentage: process.memUsage))
                     }
                 }
             }
@@ -356,13 +421,24 @@ struct ContentView: View {
                 Spacer()
             }
 
-            VStack(spacing: 8) {
-                miniStatRow(label: "Running", value: "\(dataManager.systemStats.runningProcesses)", color: ModernColors.statusLow)
-                miniStatRow(label: "Sleeping", value: "\(dataManager.systemStats.sleeping)", color: ModernColors.cyan)
-                if dataManager.systemStats.stuckProcesses > 0 {
-                    miniStatRow(label: "Stuck", value: "\(dataManager.systemStats.stuckProcesses)", color: ModernColors.statusCritical)
+            HStack(spacing: 12) {
+                // Circular gauge showing running/sleeping ratio
+                let runningPercent = dataManager.systemStats.processes > 0 ? (Double(dataManager.systemStats.runningProcesses) / Double(dataManager.systemStats.processes)) * 100.0 : 0
+                CircularGauge(
+                    value: runningPercent,
+                    color: ModernColors.statusLow,
+                    size: 80,
+                    lineWidth: 8,
+                    showValue: false
+                )
+
+                VStack(alignment: .leading, spacing: 6) {
+                    miniStatRow(label: "Running", value: "\(dataManager.systemStats.runningProcesses)", color: ModernColors.statusLow)
+                    miniStatRow(label: "Sleeping", value: "\(dataManager.systemStats.sleeping)", color: ModernColors.cyan)
+                    if dataManager.systemStats.stuckProcesses > 0 {
+                        miniStatRow(label: "Stuck", value: "\(dataManager.systemStats.stuckProcesses)", color: ModernColors.statusCritical)
+                    }
                 }
-                miniStatRow(label: "Threads", value: "\(dataManager.systemStats.threads)", color: ModernColors.purple)
             }
         }
         .glassCard()
@@ -407,6 +483,207 @@ struct ContentView: View {
             VStack(spacing: 8) {
                 miniStatRow(label: "Reads", value: dataManager.systemStats.diskReads.isEmpty ? "N/A" : dataManager.systemStats.diskReads, color: ModernColors.cyan)
                 miniStatRow(label: "Writes", value: dataManager.systemStats.diskWrites.isEmpty ? "N/A" : dataManager.systemStats.diskWrites, color: ModernColors.purple)
+            }
+        }
+        .glassCard()
+    }
+
+    // MARK: - Memory Pressure Card
+    private var memoryPressureCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "gauge.with.dots.needle.50percent")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(ModernColors.teal)
+
+                Text("Memory Pressure")
+                    .modernHeader(size: .medium)
+
+                Spacer()
+            }
+
+            VStack(spacing: 6) {
+                miniStatRow(label: "Active", value: dataManager.systemStats.memPagesActive, color: ModernColors.statusHigh)
+                miniStatRow(label: "Inactive", value: dataManager.systemStats.memPagesInactive, color: ModernColors.cyan)
+                miniStatRow(label: "Wired", value: dataManager.systemStats.memPagesWired, color: ModernColors.purple)
+                miniStatRow(label: "Free", value: dataManager.systemStats.memPagesFree, color: ModernColors.statusLow)
+            }
+        }
+        .glassCard()
+    }
+
+    // MARK: - CPU Cores Info Card
+    private var cpuCoresInfoCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "cpu.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(ModernColors.accentBlue)
+
+                Text("CPU Info")
+                    .modernHeader(size: .medium)
+
+                Spacer()
+            }
+
+            VStack(spacing: 8) {
+                miniStatRow(label: "Cores", value: "\(dataManager.systemStats.cpuCores)", color: ModernColors.cyan)
+                miniStatRow(label: "Threads", value: "\(dataManager.systemStats.threads)", color: ModernColors.purple)
+                if dataManager.systemStats.cpuTemperature > 0 {
+                    miniStatRow(label: "Temp", value: String(format: "%.1f°C", dataManager.systemStats.cpuTemperature), color: ModernColors.statusHigh)
+                }
+                if dataManager.systemStats.cpuFrequency > 0 {
+                    miniStatRow(label: "Frequency", value: String(format: "%.2f GHz", dataManager.systemStats.cpuFrequency), color: ModernColors.accentBlue)
+                }
+            }
+        }
+        .glassCard()
+    }
+
+    // MARK: - Per-Core CPU Grid Card
+    private var perCoreCPUCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "cpu.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(ModernColors.cyan)
+
+                Text("Per-Core CPU Usage")
+                    .modernHeader(size: .medium)
+
+                Spacer()
+
+                Text("\(dataManager.systemStats.perCoreCPU.count) cores")
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .foregroundColor(ModernColors.textSecondary)
+            }
+
+            // Grid of CPU cores (8 columns for 32 cores)
+            let coreColumns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 8)
+            LazyVGrid(columns: coreColumns, spacing: 8) {
+                ForEach(Array(dataManager.systemStats.perCoreCPU.enumerated()), id: \.offset) { index, usage in
+                    VStack(spacing: 4) {
+                        MiniGauge(
+                            value: usage,
+                            color: ModernColors.heatColor(percentage: usage)
+                        )
+
+                        Text("\(index)")
+                            .font(.system(size: 8, weight: .medium, design: .monospaced))
+                            .foregroundColor(ModernColors.textTertiary)
+                    }
+                }
+            }
+        }
+        .glassCard(prominent: true)
+    }
+
+    // MARK: - Disk Activity Card
+    private var diskActivityCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "internaldrive.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(ModernColors.orange)
+
+                Text("Disk Activity")
+                    .modernHeader(size: .medium)
+
+                Spacer()
+            }
+
+            if dataManager.systemStats.disks.isEmpty {
+                Text("No disk activity data")
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .foregroundColor(ModernColors.textSecondary)
+            } else {
+                VStack(spacing: 8) {
+                    ForEach(dataManager.systemStats.disks.prefix(3)) { disk in
+                        HStack(spacing: 8) {
+                            MiniGauge(
+                                value: disk.utilization,
+                                color: ModernColors.heatColor(percentage: disk.utilization)
+                            )
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(disk.name)
+                                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                                    .foregroundColor(ModernColors.textPrimary)
+
+                                HStack(spacing: 8) {
+                                    Text("R: \(String(format: "%.1f", disk.readMBps)) MB/s")
+                                        .font(.system(size: 9, weight: .medium, design: .monospaced))
+                                        .foregroundColor(ModernColors.cyan)
+
+                                    Text("W: \(String(format: "%.1f", disk.writeMBps)) MB/s")
+                                        .font(.system(size: 9, weight: .medium, design: .monospaced))
+                                        .foregroundColor(ModernColors.purple)
+                                }
+                            }
+
+                            Spacer()
+                        }
+                    }
+                }
+            }
+        }
+        .glassCard()
+    }
+
+    // MARK: - Network Bandwidth Card
+    private var networkBandwidthCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "wifi.circle.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(ModernColors.accentGreen)
+
+                Text("Network Bandwidth")
+                    .modernHeader(size: .medium)
+
+                Spacer()
+            }
+
+            if dataManager.systemStats.networkInterfaces.isEmpty {
+                Text("No network data")
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .foregroundColor(ModernColors.textSecondary)
+            } else {
+                VStack(spacing: 8) {
+                    ForEach(dataManager.systemStats.networkInterfaces.prefix(2)) { interface in
+                        HStack(spacing: 8) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(interface.name)
+                                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                                    .foregroundColor(ModernColors.textPrimary)
+
+                                HStack(spacing: 8) {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "arrow.down")
+                                            .font(.system(size: 8))
+                                            .foregroundColor(ModernColors.statusLow)
+
+                                        Text(String(format: "%.2f MB/s", interface.downloadMBps))
+                                            .font(.system(size: 9, weight: .medium, design: .monospaced))
+                                            .foregroundColor(ModernColors.statusLow)
+                                    }
+
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "arrow.up")
+                                            .font(.system(size: 8))
+                                            .foregroundColor(ModernColors.statusHigh)
+
+                                        Text(String(format: "%.2f MB/s", interface.uploadMBps))
+                                            .font(.system(size: 9, weight: .medium, design: .monospaced))
+                                            .foregroundColor(ModernColors.statusHigh)
+                                    }
+                                }
+                            }
+
+                            Spacer()
+                        }
+                    }
+                }
             }
         }
         .glassCard()
