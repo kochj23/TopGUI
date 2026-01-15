@@ -83,6 +83,8 @@ struct CardDetailView: View {
             diskActivityDetailView
         case .networkBandwidth:
             networkBandwidthDetailView
+        case .systemHealth:
+            systemHealthDetailView
         }
     }
 
@@ -98,8 +100,9 @@ struct CardDetailView: View {
         case .memoryPressure: return "Memory Pressure"
         case .cpuInfo: return "CPU Information"
         case .perCore: return "Per-Core CPU Usage"
-        case .diskActivity: return "Disk Activity"
+        case .diskActivity: return "Disk Usage"
         case .networkBandwidth: return "Network Bandwidth"
+        case .systemHealth: return "System Health"
         }
     }
 
@@ -115,8 +118,9 @@ struct CardDetailView: View {
         case .memoryPressure: return "Detailed memory pressure analysis"
         case .cpuInfo: return "CPU architecture and configuration"
         case .perCore: return "Individual core utilization"
-        case .diskActivity: return "Per-disk I/O statistics"
-        case .networkBandwidth: return "Per-interface bandwidth"
+        case .diskActivity: return "Disk space usage"
+        case .networkBandwidth: return "Combined network bandwidth"
+        case .systemHealth: return "Overall system health score"
         }
     }
 
@@ -597,6 +601,49 @@ struct CardDetailView: View {
                 }
                 .glassCard()
             }
+        }
+    }
+
+    // MARK: - System Health Detail View
+    private var systemHealthDetailView: some View {
+        VStack(spacing: 16) {
+            let cpuScore = max(0, 100 - dataManager.systemStats.totalCPU)
+            let memScore = max(0, 100 - dataManager.systemStats.memoryUsagePercentage)
+            let diskScore = dataManager.systemStats.disks.isEmpty ? 50.0 : dataManager.systemStats.disks.map { 100 - $0.percentUsed }.reduce(0, +) / Double(dataManager.systemStats.disks.count)
+            let healthScore = (cpuScore * 0.4 + memScore * 0.3 + diskScore * 0.3)
+
+            HStack(spacing: 20) {
+                CircularGauge(
+                    value: healthScore,
+                    color: ModernColors.heatColor(percentage: 100 - healthScore),
+                    size: 150,
+                    lineWidth: 15,
+                    showValue: true,
+                    label: "health"
+                )
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Health Components")
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                        .foregroundColor(ModernColors.textSecondary)
+
+                    detailRow(label: "CPU Health", value: String(format: "%.0f%%", cpuScore), color: ModernColors.cyan)
+                    detailRow(label: "Memory Health", value: String(format: "%.0f%%", memScore), color: ModernColors.purple)
+                    detailRow(label: "Disk Health", value: String(format: "%.0f%%", diskScore), color: ModernColors.orange)
+                    detailRow(label: "Overall Score", value: String(format: "%.0f%%", healthScore), color: ModernColors.pink)
+                }
+            }
+            .glassCard()
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text("About System Health")
+                    .modernHeader(size: .small)
+
+                Text("System health is calculated from CPU usage (40%), memory usage (30%), and available disk space (30%). Higher scores indicate a healthier system with more available resources.")
+                    .font(.system(size: 13, design: .rounded))
+                    .foregroundColor(ModernColors.textSecondary)
+            }
+            .glassCard()
         }
     }
 

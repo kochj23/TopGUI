@@ -19,7 +19,7 @@ struct ContentView: View {
     @State private var sortAscending = false
 
     enum CardType: Identifiable {
-        case cpu, memory, loadAverages, topCPU, topMemory, swap, states, memoryPressure, cpuInfo, perCore, diskActivity, networkBandwidth
+        case cpu, memory, loadAverages, topCPU, topMemory, swap, states, memoryPressure, cpuInfo, perCore, diskActivity, networkBandwidth, systemHealth
 
         var id: String {
             switch self {
@@ -35,6 +35,7 @@ struct ContentView: View {
             case .perCore: return "perCore"
             case .diskActivity: return "diskActivity"
             case .networkBandwidth: return "networkBandwidth"
+            case .systemHealth: return "systemHealth"
             }
         }
     }
@@ -79,6 +80,7 @@ struct ContentView: View {
                         cpuCoresInfoCard
                         diskActivityCard
                         networkBandwidthCard
+                        systemHealthCard
                     }
                     .padding(.horizontal, 20)
 
@@ -461,9 +463,9 @@ struct ContentView: View {
                 Spacer()
 
                 VStack(alignment: .trailing, spacing: 6) {
-                    miniStatRow(label: "Used", value: dataManager.systemStats.swapUsed.isEmpty ? "0M" : dataManager.systemStats.swapUsed, color: ModernColors.statusHigh)
-                    miniStatRow(label: "Free", value: dataManager.systemStats.swapFree.isEmpty ? "0M" : dataManager.systemStats.swapFree, color: ModernColors.statusLow)
-                    miniStatRow(label: "Total", value: dataManager.systemStats.swapTotal.isEmpty ? "0M" : dataManager.systemStats.swapTotal, color: ModernColors.yellow)
+                    miniStatRow(label: "Used", value: formatSwapValue(dataManager.systemStats.swapUsed), color: ModernColors.statusHigh)
+                    miniStatRow(label: "Free", value: formatSwapValue(dataManager.systemStats.swapFree), color: ModernColors.statusLow)
+                    miniStatRow(label: "Total", value: formatSwapValue(dataManager.systemStats.swapTotal), color: ModernColors.yellow)
                     if swapTotalNum == 0 {
                         Text("No swap file")
                             .font(.system(size: 9, design: .rounded))
@@ -755,6 +757,7 @@ struct ContentView: View {
                 }
             }
         }
+        .frame(height: 220)
         .glassCard()
         .onTapGesture {
             selectedCard = .diskActivity
@@ -793,16 +796,64 @@ struct ContentView: View {
                 Spacer()
 
                 VStack(alignment: .trailing, spacing: 6) {
-                    miniStatRow(label: "Download", value: String(format: "%.1f MB/s", totalDownload), color: ModernColors.statusLow)
-                    miniStatRow(label: "Upload", value: String(format: "%.1f MB/s", totalUpload), color: ModernColors.statusHigh)
-                    miniStatRow(label: "Total", value: String(format: "%.1f MB/s", totalBandwidth), color: ModernColors.accentGreen)
+                    miniStatRow(label: "Download", value: String(format: "%.0f MB/s", totalDownload), color: ModernColors.statusLow)
+                    miniStatRow(label: "Upload", value: String(format: "%.0f MB/s", totalUpload), color: ModernColors.statusHigh)
+                    miniStatRow(label: "Total", value: String(format: "%.0f MB/s", totalBandwidth), color: ModernColors.accentGreen)
                     miniStatRow(label: "Interfaces", value: "\(dataManager.systemStats.networkInterfaces.count)", color: ModernColors.textSecondary)
                 }
             }
         }
+        .frame(height: 220)
         .glassCard()
         .onTapGesture {
             selectedCard = .networkBandwidth
+        }
+    }
+
+    // MARK: - System Health Card
+    private var systemHealthCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "heart.circle.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(ModernColors.pink)
+
+                Text("System Health")
+                    .modernHeader(size: .medium)
+
+                Spacer()
+            }
+
+            // Calculate overall health score
+            HStack {
+                let cpuScore = max(0, 100 - dataManager.systemStats.totalCPU)
+                let memScore = max(0, 100 - dataManager.systemStats.memoryUsagePercentage)
+                let diskScore = dataManager.systemStats.disks.isEmpty ? 50.0 : dataManager.systemStats.disks.map { 100 - $0.percentUsed }.reduce(0, +) / Double(dataManager.systemStats.disks.count)
+                let healthScore = (cpuScore * 0.4 + memScore * 0.3 + diskScore * 0.3)
+
+                CircularGauge(
+                    value: healthScore,
+                    color: ModernColors.heatColor(percentage: 100 - healthScore),
+                    size: 80,
+                    lineWidth: 8,
+                    showValue: true,
+                    label: "health"
+                )
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 6) {
+                    miniStatRow(label: "CPU", value: String(format: "%.0f%%", cpuScore), color: ModernColors.cyan)
+                    miniStatRow(label: "Memory", value: String(format: "%.0f%%", memScore), color: ModernColors.purple)
+                    miniStatRow(label: "Disk", value: String(format: "%.0f%%", diskScore), color: ModernColors.orange)
+                    miniStatRow(label: "Overall", value: String(format: "%.0f%%", healthScore), color: ModernColors.pink)
+                }
+            }
+        }
+        .frame(height: 220)
+        .glassCard()
+        .onTapGesture {
+            selectedCard = .systemHealth
         }
     }
 
@@ -1006,6 +1057,24 @@ struct ContentView: View {
             Color.white.opacity(0.1) : Color.clear
         )
         .contentShape(Rectangle())
+    }
+
+    // MARK: - Helper Functions
+    private func formatSwapValue(_ value: String) -> String {
+        // Input: "0.00M" or "2.50G"
+        // Output: "0 MB" or "3 GB"
+        guard !value.isEmpty else { return "0 MB" }
+        let numStr = value.filter { $0.isNumber || $0 == "." }
+        guard let num = Double(numStr) else { return value }
+
+        if value.contains("G") {
+            return "\(Int(num)) GB"
+        } else if value.contains("M") {
+            return "\(Int(num)) MB"
+        } else if value.contains("K") {
+            return "\(Int(num)) KB"
+        }
+        return value
     }
 
     // MARK: - Helper Views
