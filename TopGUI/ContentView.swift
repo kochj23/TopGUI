@@ -214,8 +214,10 @@ struct ContentView: View {
                 miniStatRow(label: "System", value: String(format: "%.0f%%", dataManager.systemStats.cpuSystem), color: ModernColors.purple)
                 miniStatRow(label: "Idle", value: String(format: "%.0f%%", dataManager.systemStats.cpuIdle), color: ModernColors.statusLow)
             }
+
+            Spacer(minLength: 0)
         }
-        .frame(height: 220)
+        .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
             selectedCard = .cpu
@@ -258,8 +260,9 @@ struct ContentView: View {
                     miniStatRow(label: "Wired", value: dataManager.systemStats.memWired, color: ModernColors.cyan)
                 }
             }
+            Spacer(minLength: 0)
         }
-        .frame(height: 220)
+        .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
             selectedCard = .memory
@@ -330,8 +333,9 @@ struct ContentView: View {
                         .foregroundColor(ModernColors.teal)
                 }
             }
+            Spacer(minLength: 0)
         }
-        .frame(height: 220)
+        .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
             selectedCard = .loadAverages
@@ -383,8 +387,9 @@ struct ContentView: View {
                     }
                 }
             }
+            Spacer(minLength: 0)
         }
-        .frame(height: 220)
+        .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
             selectedCard = .topCPU
@@ -434,8 +439,9 @@ struct ContentView: View {
                     }
                 }
             }
+            Spacer(minLength: 0)
         }
-        .frame(height: 220)
+        .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
             selectedCard = .topMemory
@@ -484,8 +490,9 @@ struct ContentView: View {
                     }
                 }
             }
+            Spacer(minLength: 0)
         }
-        .frame(height: 220)
+        .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
             selectedCard = .swap
@@ -529,8 +536,9 @@ struct ContentView: View {
                     miniStatRow(label: "Total", value: "\(dataManager.systemStats.processes)", color: ModernColors.textSecondary)
                 }
             }
+            Spacer(minLength: 0)
         }
-        .frame(height: 220)
+        .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
             selectedCard = .states
@@ -618,8 +626,9 @@ struct ContentView: View {
                     miniStatRow(label: "Free", value: dataManager.systemStats.memPagesFree, color: ModernColors.statusLow)
                 }
             }
+            Spacer(minLength: 0)
         }
-        .frame(height: 220)
+        .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
             selectedCard = .memoryPressure
@@ -662,8 +671,9 @@ struct ContentView: View {
                     miniStatRow(label: "Running", value: "\(dataManager.systemStats.runningProcesses)", color: ModernColors.statusLow)
                 }
             }
+            Spacer(minLength: 0)
         }
-        .frame(height: 220)
+        .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
             selectedCard = .cpuInfo
@@ -765,8 +775,9 @@ struct ContentView: View {
                     }
                 }
             }
+            Spacer(minLength: 0)
         }
-        .frame(height: 220)
+        .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
             selectedCard = .diskActivity
@@ -811,8 +822,9 @@ struct ContentView: View {
                     miniStatRow(label: "Interfaces", value: "\(dataManager.systemStats.networkInterfaces.count)", color: ModernColors.textSecondary)
                 }
             }
+            Spacer(minLength: 0)
         }
-        .frame(height: 220)
+        .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
             selectedCard = .networkBandwidth
@@ -858,8 +870,9 @@ struct ContentView: View {
                     miniStatRow(label: "Overall", value: String(format: "%.0f%%", healthScore), color: ModernColors.pink)
                 }
             }
+            Spacer(minLength: 0)
         }
-        .frame(height: 220)
+        .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
             selectedCard = .systemHealth
