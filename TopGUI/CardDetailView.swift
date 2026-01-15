@@ -134,9 +134,9 @@ struct CardDetailView: View {
                 )
 
                 VStack(alignment: .leading, spacing: 12) {
-                    detailRow(label: "User CPU", value: String(format: "%.2f%%", dataManager.systemStats.cpuUser), color: ModernColors.cyan)
-                    detailRow(label: "System CPU", value: String(format: "%.2f%%", dataManager.systemStats.cpuSystem), color: ModernColors.purple)
-                    detailRow(label: "Idle", value: String(format: "%.2f%%", dataManager.systemStats.cpuIdle), color: ModernColors.statusLow)
+                    detailRow(label: "User CPU", value: String(format: "%.0f%%", dataManager.systemStats.cpuUser), color: ModernColors.cyan)
+                    detailRow(label: "System CPU", value: String(format: "%.0f%%", dataManager.systemStats.cpuSystem), color: ModernColors.purple)
+                    detailRow(label: "Idle", value: String(format: "%.0f%%", dataManager.systemStats.cpuIdle), color: ModernColors.statusLow)
                     detailRow(label: "Total Cores", value: "\(dataManager.systemStats.cpuCores)", color: ModernColors.textSecondary)
                 }
             }
@@ -201,7 +201,7 @@ struct CardDetailView: View {
                         showValue: true,
                         label: "1 min"
                     )
-                    Text(String(format: "%.2f", dataManager.systemStats.loadAvg1min))
+                    Text(String(format: "%.1f", dataManager.systemStats.loadAvg1min))
                         .font(.system(size: 18, weight: .bold, design: .monospaced))
                         .foregroundColor(ModernColors.statusLow)
                 }
@@ -215,7 +215,7 @@ struct CardDetailView: View {
                         showValue: true,
                         label: "5 min"
                     )
-                    Text(String(format: "%.2f", dataManager.systemStats.loadAvg5min))
+                    Text(String(format: "%.1f", dataManager.systemStats.loadAvg5min))
                         .font(.system(size: 18, weight: .bold, design: .monospaced))
                         .foregroundColor(ModernColors.statusMedium)
                 }
@@ -229,7 +229,7 @@ struct CardDetailView: View {
                         showValue: true,
                         label: "15 min"
                     )
-                    Text(String(format: "%.2f", dataManager.systemStats.loadAvg15min))
+                    Text(String(format: "%.1f", dataManager.systemStats.loadAvg15min))
                         .font(.system(size: 18, weight: .bold, design: .monospaced))
                         .foregroundColor(ModernColors.teal)
                 }
@@ -513,29 +513,30 @@ struct CardDetailView: View {
         }
     }
 
-    // MARK: - Disk Activity Detail View
+    // MARK: - Disk Usage Detail View
     private var diskActivityDetailView: some View {
         VStack(spacing: 16) {
             ForEach(dataManager.systemStats.disks) { disk in
                 HStack(spacing: 20) {
                     CircularGauge(
-                        value: disk.utilization,
-                        color: ModernColors.heatColor(percentage: disk.utilization),
-                        size: 100,
-                        lineWidth: 12,
+                        value: disk.percentUsed,
+                        color: ModernColors.heatColor(percentage: disk.percentUsed),
+                        size: 120,
+                        lineWidth: 14,
                         showValue: true,
-                        label: "util"
+                        label: "full"
                     )
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text(disk.name)
-                            .font(.system(size: 16, weight: .semibold, design: .monospaced))
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundColor(ModernColors.textPrimary)
 
-                        detailRow(label: "Read", value: String(format: "%.2f MB/s", disk.readMBps), color: ModernColors.cyan)
-                        detailRow(label: "Write", value: String(format: "%.2f MB/s", disk.writeMBps), color: ModernColors.purple)
-                        detailRow(label: "Read Ops", value: "\(disk.readOps)/s", color: ModernColors.statusLow)
-                        detailRow(label: "Write Ops", value: "\(disk.writeOps)/s", color: ModernColors.statusHigh)
+                        detailRow(label: "Total Space", value: String(format: "%.0f GB", disk.totalGB), color: ModernColors.textPrimary)
+                        detailRow(label: "Used", value: String(format: "%.0f GB", disk.usedGB), color: ModernColors.statusHigh)
+                        detailRow(label: "Available", value: String(format: "%.0f GB", disk.availableGB), color: ModernColors.statusLow)
+                        detailRow(label: "Mount Point", value: disk.mountPoint, color: ModernColors.textSecondary)
+                        detailRow(label: "Filesystem", value: disk.filesystem, color: ModernColors.textTertiary)
                     }
                 }
                 .glassCard()
@@ -564,7 +565,7 @@ struct CardDetailView: View {
                             Text("Download")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
                                 .foregroundColor(ModernColors.textSecondary)
-                            Text(String(format: "%.2f MB/s", interface.downloadMBps))
+                            Text(String(format: "%.1f MB/s", interface.downloadMBps))
                                 .font(.system(size: 14, weight: .bold, design: .monospaced))
                                 .foregroundColor(ModernColors.statusLow)
                         }
@@ -580,7 +581,7 @@ struct CardDetailView: View {
                             Text("Upload")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
                                 .foregroundColor(ModernColors.textSecondary)
-                            Text(String(format: "%.2f MB/s", interface.uploadMBps))
+                            Text(String(format: "%.1f MB/s", interface.uploadMBps))
                                 .font(.system(size: 14, weight: .bold, design: .monospaced))
                                 .foregroundColor(ModernColors.statusHigh)
                         }

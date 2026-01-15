@@ -32,12 +32,13 @@ struct ProcessInfo: Identifiable, Equatable {
 
 struct DiskStats: Identifiable {
     let id = UUID()
-    let name: String
-    let readMBps: Double
-    let writeMBps: Double
-    let readOps: Int
-    let writeOps: Int
-    let utilization: Double
+    let name: String // Volume name
+    let filesystem: String // /dev/disk1s1
+    let totalGB: Double
+    let usedGB: Double
+    let availableGB: Double
+    let percentUsed: Double
+    let mountPoint: String
 }
 
 struct NetworkInterface: Identifiable {
@@ -62,8 +63,9 @@ struct SystemStats {
     var memPhysFree: String = ""
     var memWired: String = ""
     var memCompressed: String = ""
-    var swapUsed: String = ""
-    var swapFree: String = ""
+    var swapUsed: String = "" // Now: actual swap used from sysctl
+    var swapFree: String = "" // Now: actual swap free from sysctl
+    var swapTotal: String = "" // Total swap space
 
     // Load averages
     var loadAvg1min: Double = 0.0

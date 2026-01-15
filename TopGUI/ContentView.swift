@@ -184,7 +184,7 @@ struct ContentView: View {
 
                 Spacer()
 
-                Text(String(format: "%.1f%%", dataManager.systemStats.totalCPU))
+                Text(String(format: "%.0f%%", dataManager.systemStats.totalCPU))
                     .font(.system(size: 18, weight: .bold, design: .rounded))
                     .foregroundColor(ModernColors.heatColor(percentage: dataManager.systemStats.totalCPU))
             }
@@ -218,9 +218,9 @@ struct ContentView: View {
             Divider().background(Color.white.opacity(0.1))
 
             VStack(spacing: 6) {
-                miniStatRow(label: "User", value: String(format: "%.1f%%", dataManager.systemStats.cpuUser), color: ModernColors.cyan)
-                miniStatRow(label: "System", value: String(format: "%.1f%%", dataManager.systemStats.cpuSystem), color: ModernColors.purple)
-                miniStatRow(label: "Idle", value: String(format: "%.1f%%", dataManager.systemStats.cpuIdle), color: ModernColors.statusLow)
+                miniStatRow(label: "User", value: String(format: "%.0f%%", dataManager.systemStats.cpuUser), color: ModernColors.cyan)
+                miniStatRow(label: "System", value: String(format: "%.0f%%", dataManager.systemStats.cpuSystem), color: ModernColors.purple)
+                miniStatRow(label: "Idle", value: String(format: "%.0f%%", dataManager.systemStats.cpuIdle), color: ModernColors.statusLow)
             }
         }
         .frame(height: 220)
@@ -298,7 +298,7 @@ struct ContentView: View {
                     Text("1 min")
                         .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundColor(ModernColors.textSecondary)
-                    Text(String(format: "%.2f", dataManager.systemStats.loadAvg1min))
+                    Text(String(format: "%.1f", dataManager.systemStats.loadAvg1min))
                         .font(.system(size: 12, weight: .bold, design: .monospaced))
                         .foregroundColor(ModernColors.statusLow)
                 }
@@ -311,7 +311,7 @@ struct ContentView: View {
                     Text("5 min")
                         .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundColor(ModernColors.textSecondary)
-                    Text(String(format: "%.2f", dataManager.systemStats.loadAvg5min))
+                    Text(String(format: "%.1f", dataManager.systemStats.loadAvg5min))
                         .font(.system(size: 12, weight: .bold, design: .monospaced))
                         .foregroundColor(ModernColors.statusMedium)
                 }
@@ -324,7 +324,7 @@ struct ContentView: View {
                     Text("15 min")
                         .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundColor(ModernColors.textSecondary)
-                    Text(String(format: "%.2f", dataManager.systemStats.loadAvg15min))
+                    Text(String(format: "%.1f", dataManager.systemStats.loadAvg15min))
                         .font(.system(size: 12, weight: .bold, design: .monospaced))
                         .foregroundColor(ModernColors.teal)
                 }
@@ -373,7 +373,7 @@ struct ContentView: View {
                                 .foregroundColor(ModernColors.textPrimary)
                                 .lineLimit(1)
 
-                            Text(String(format: "%.1f%%", process.cpuUsage))
+                            Text(String(format: "%.0f%%", process.cpuUsage))
                                 .font(.system(size: 10, weight: .semibold, design: .monospaced))
                                 .foregroundColor(ModernColors.heatColor(percentage: process.cpuUsage))
                         }
@@ -424,7 +424,7 @@ struct ContentView: View {
                                 .foregroundColor(ModernColors.textPrimary)
                                 .lineLimit(1)
 
-                            Text(String(format: "%.1f%%", process.memUsage))
+                            Text(String(format: "%.0f%%", process.memUsage))
                                 .font(.system(size: 10, weight: .semibold, design: .monospaced))
                                 .foregroundColor(ModernColors.heatColor(percentage: process.memUsage))
                         }
@@ -453,26 +453,32 @@ struct ContentView: View {
                 Spacer()
             }
 
-            // Dial showing swap activity ratio
+            // Dial showing swap usage percentage
             HStack {
-                let swapinNum = Double(dataManager.systemStats.swapUsed.filter { $0.isNumber }) ?? 0
-                let swapoutNum = Double(dataManager.systemStats.swapFree.filter { $0.isNumber }) ?? 0
-                let swapTotal = swapinNum + swapoutNum
-                let swapPercent = swapTotal > 0 ? (swapinNum / swapTotal) * 100.0 : 0
+                let swapUsedNum = Double(dataManager.systemStats.swapUsed.filter { $0.isNumber || $0 == "." }) ?? 0
+                let swapTotalNum = Double(dataManager.systemStats.swapTotal.filter { $0.isNumber || $0 == "." }) ?? 0
+                let swapPercent = swapTotalNum > 0 ? (swapUsedNum / swapTotalNum) * 100.0 : 0
 
                 CircularGauge(
                     value: swapPercent,
-                    color: ModernColors.yellow,
+                    color: ModernColors.heatColor(percentage: swapPercent),
                     size: 80,
                     lineWidth: 8,
-                    showValue: false
+                    showValue: true,
+                    label: "used"
                 )
 
                 Spacer()
 
                 VStack(alignment: .trailing, spacing: 6) {
-                    miniStatRow(label: "Swapins", value: dataManager.systemStats.swapUsed.isEmpty ? "0M" : dataManager.systemStats.swapUsed, color: ModernColors.statusHigh)
-                    miniStatRow(label: "Swapouts", value: dataManager.systemStats.swapFree.isEmpty ? "0M" : dataManager.systemStats.swapFree, color: ModernColors.statusLow)
+                    miniStatRow(label: "Used", value: dataManager.systemStats.swapUsed.isEmpty ? "0M" : dataManager.systemStats.swapUsed, color: ModernColors.statusHigh)
+                    miniStatRow(label: "Free", value: dataManager.systemStats.swapFree.isEmpty ? "0M" : dataManager.systemStats.swapFree, color: ModernColors.statusLow)
+                    miniStatRow(label: "Total", value: dataManager.systemStats.swapTotal.isEmpty ? "0M" : dataManager.systemStats.swapTotal, color: ModernColors.yellow)
+                    if swapTotalNum == 0 {
+                        Text("No swap file")
+                            .font(.system(size: 9, design: .rounded))
+                            .foregroundColor(ModernColors.textTertiary)
+                    }
                 }
             }
         }
@@ -705,7 +711,7 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Disk Activity Card
+    // MARK: - Disk Usage Card
     private var diskActivityCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -713,14 +719,14 @@ struct ContentView: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(ModernColors.orange)
 
-                Text("Disk Activity")
+                Text("Disk Usage")
                     .modernHeader(size: .medium)
 
                 Spacer()
             }
 
             if dataManager.systemStats.disks.isEmpty {
-                Text("No disk activity data")
+                Text("Loading disk data...")
                     .font(.system(size: 12, weight: .medium, design: .rounded))
                     .foregroundColor(ModernColors.textSecondary)
             } else {
@@ -728,27 +734,32 @@ struct ContentView: View {
                     ForEach(dataManager.systemStats.disks.prefix(3)) { disk in
                         HStack(spacing: 8) {
                             MiniGauge(
-                                value: disk.utilization,
-                                color: ModernColors.heatColor(percentage: disk.utilization)
+                                value: disk.percentUsed,
+                                color: ModernColors.heatColor(percentage: disk.percentUsed)
                             )
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(disk.name)
                                     .font(.system(size: 11, weight: .semibold, design: .monospaced))
                                     .foregroundColor(ModernColors.textPrimary)
+                                    .lineLimit(1)
 
                                 HStack(spacing: 8) {
-                                    Text("R: \(String(format: "%.1f", disk.readMBps)) MB/s")
+                                    Text("\(String(format: "%.0f", disk.usedGB)) GB used")
                                         .font(.system(size: 9, weight: .medium, design: .monospaced))
-                                        .foregroundColor(ModernColors.cyan)
+                                        .foregroundColor(ModernColors.statusHigh)
 
-                                    Text("W: \(String(format: "%.1f", disk.writeMBps)) MB/s")
+                                    Text("of \(String(format: "%.0f", disk.totalGB)) GB")
                                         .font(.system(size: 9, weight: .medium, design: .monospaced))
-                                        .foregroundColor(ModernColors.purple)
+                                        .foregroundColor(ModernColors.textSecondary)
                                 }
                             }
 
                             Spacer()
+
+                            Text("\(String(format: "%.0f", disk.percentUsed))%")
+                                .font(.system(size: 14, weight: .bold, design: .monospaced))
+                                .foregroundColor(ModernColors.heatColor(percentage: disk.percentUsed))
                         }
                     }
                 }
@@ -768,51 +779,34 @@ struct ContentView: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(ModernColors.accentGreen)
 
-                Text("Network Bandwidth")
+                Text("Network")
                     .modernHeader(size: .medium)
 
                 Spacer()
             }
 
-            if dataManager.systemStats.networkInterfaces.isEmpty {
-                Text("No network data")
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundColor(ModernColors.textSecondary)
-            } else {
-                VStack(spacing: 8) {
-                    ForEach(dataManager.systemStats.networkInterfaces.prefix(2)) { interface in
-                        HStack(spacing: 8) {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(interface.name)
-                                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                                    .foregroundColor(ModernColors.textPrimary)
+            // Single dial showing combined network usage
+            HStack {
+                let totalDownload = dataManager.systemStats.networkInterfaces.reduce(0.0) { $0 + $1.downloadMBps }
+                let totalUpload = dataManager.systemStats.networkInterfaces.reduce(0.0) { $0 + $1.uploadMBps }
+                let totalBandwidth = totalDownload + totalUpload
+                let bandwidthPercent = min(totalBandwidth * 10.0, 100.0) // Scale to percentage
 
-                                HStack(spacing: 8) {
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "arrow.down")
-                                            .font(.system(size: 8))
-                                            .foregroundColor(ModernColors.statusLow)
+                CircularGauge(
+                    value: bandwidthPercent,
+                    color: ModernColors.accentGreen,
+                    size: 80,
+                    lineWidth: 8,
+                    showValue: false
+                )
 
-                                        Text(String(format: "%.2f MB/s", interface.downloadMBps))
-                                            .font(.system(size: 9, weight: .medium, design: .monospaced))
-                                            .foregroundColor(ModernColors.statusLow)
-                                    }
+                Spacer()
 
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "arrow.up")
-                                            .font(.system(size: 8))
-                                            .foregroundColor(ModernColors.statusHigh)
-
-                                        Text(String(format: "%.2f MB/s", interface.uploadMBps))
-                                            .font(.system(size: 9, weight: .medium, design: .monospaced))
-                                            .foregroundColor(ModernColors.statusHigh)
-                                    }
-                                }
-                            }
-
-                            Spacer()
-                        }
-                    }
+                VStack(alignment: .trailing, spacing: 6) {
+                    miniStatRow(label: "Download", value: String(format: "%.1f MB/s", totalDownload), color: ModernColors.statusLow)
+                    miniStatRow(label: "Upload", value: String(format: "%.1f MB/s", totalUpload), color: ModernColors.statusHigh)
+                    miniStatRow(label: "Total", value: String(format: "%.1f MB/s", totalBandwidth), color: ModernColors.accentGreen)
+                    miniStatRow(label: "Interfaces", value: "\(dataManager.systemStats.networkInterfaces.count)", color: ModernColors.textSecondary)
                 }
             }
         }
@@ -993,7 +987,7 @@ struct ContentView: View {
                     .fill(ModernColors.heatColor(percentage: process.cpuUsage))
                     .frame(width: 6, height: 6)
 
-                Text(String(format: "%.1f%%", process.cpuUsage))
+                Text(String(format: "%.0f%%", process.cpuUsage))
                     .font(.system(size: 11, weight: .semibold, design: .monospaced))
                     .foregroundColor(ModernColors.heatColor(percentage: process.cpuUsage))
             }
@@ -1004,7 +998,7 @@ struct ContentView: View {
                     .fill(ModernColors.heatColor(percentage: process.memUsage))
                     .frame(width: 6, height: 6)
 
-                Text(String(format: "%.1f%%", process.memUsage))
+                Text(String(format: "%.0f%%", process.memUsage))
                     .font(.system(size: 11, weight: .semibold, design: .monospaced))
                     .foregroundColor(ModernColors.heatColor(percentage: process.memUsage))
             }
