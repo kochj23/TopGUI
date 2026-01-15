@@ -43,8 +43,9 @@ struct ContentView: View {
         case pid, command, cpu, memory, time
     }
 
-    // Grid columns - 3 columns for main stats
+    // Grid columns - 4 columns for main stats
     let columns = [
+        GridItem(.flexible(), spacing: 16),
         GridItem(.flexible(), spacing: 16),
         GridItem(.flexible(), spacing: 16),
         GridItem(.flexible(), spacing: 16)
@@ -62,38 +63,27 @@ struct ContentView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 20)
 
-                    // Main grid layout
+                    // Main grid layout - 4 columns
                     LazyVGrid(columns: columns, spacing: 16) {
-                        // Row 1: CPU, Memory, Load Averages
+                        // All stat cards in 4-column grid
                         cpuCard
                         memoryCard
                         loadAveragesCard
-
-                        // Row 2: Top CPU Processes, Top Memory Processes, Swap Usage
                         topCPUProcessesCard
+
                         topMemoryProcessesCard
                         swapUsageCard
-
-                        // Row 3: Process States, Memory Pressure, CPU Cores Info
                         processStatesCard
                         memoryPressureCard
+
                         cpuCoresInfoCard
-                    }
-                    .padding(.horizontal, 20)
-
-                    // Per-Core CPU Grid (full width)
-                    perCoreCPUCard
-                        .padding(.horizontal, 20)
-
-                    // Disk and Network (full width, side by side)
-                    HStack(spacing: 16) {
                         diskActivityCard
                         networkBandwidthCard
                     }
                     .padding(.horizontal, 20)
 
-                    // Quick Actions (full width)
-                    quickActionsCard
+                    // Per-Core CPU Grid (full width)
+                    perCoreCPUCard
                         .padding(.horizontal, 20)
                         .padding(.bottom, 20)
                 }
