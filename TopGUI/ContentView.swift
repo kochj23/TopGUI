@@ -73,10 +73,6 @@ struct ContentView: View {
                     // Quick Actions (full width)
                     quickActionsCard
                         .padding(.horizontal, 20)
-
-                    // Process List (full width)
-                    processListCard
-                        .padding(.horizontal, 20)
                         .padding(.bottom, 20)
                 }
             }
@@ -201,6 +197,7 @@ struct ContentView: View {
                 miniStatRow(label: "Idle", value: String(format: "%.1f%%", dataManager.systemStats.cpuIdle), color: ModernColors.statusLow)
             }
         }
+        .frame(height: 220)
         .glassCard()
     }
 
@@ -241,6 +238,7 @@ struct ContentView: View {
                 }
             }
         }
+        .frame(height: 220)
         .glassCard()
     }
 
@@ -300,6 +298,7 @@ struct ContentView: View {
                 }
             }
         }
+        .frame(height: 220)
         .glassCard()
     }
 
@@ -317,30 +316,37 @@ struct ContentView: View {
                 Spacer()
             }
 
-            VStack(spacing: 8) {
-                ForEach(Array(dataManager.processes.prefix(5).enumerated()), id: \.element.id) { index, process in
-                    HStack(spacing: 8) {
-                        MiniGauge(
-                            value: process.cpuUsage,
-                            color: ModernColors.heatColor(percentage: process.cpuUsage)
-                        )
+            // Single dial showing top 5 vs rest
+            let top5CPU = dataManager.processes.prefix(5).reduce(0.0) { $0 + $1.cpuUsage }
+            HStack {
+                CircularGauge(
+                    value: min(top5CPU, 100.0),
+                    color: ModernColors.orange,
+                    size: 80,
+                    lineWidth: 8,
+                    showValue: true,
+                    label: "top 5"
+                )
 
-                        VStack(alignment: .leading, spacing: 2) {
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 4) {
+                    ForEach(Array(dataManager.processes.prefix(5).enumerated()), id: \.element.id) { index, process in
+                        HStack(spacing: 6) {
                             Text(process.command)
-                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .font(.system(size: 10, weight: .medium, design: .monospaced))
                                 .foregroundColor(ModernColors.textPrimary)
                                 .lineLimit(1)
 
-                            Text(String(format: "%.1f%% CPU", process.cpuUsage))
-                                .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                            Text(String(format: "%.1f%%", process.cpuUsage))
+                                .font(.system(size: 10, weight: .semibold, design: .monospaced))
                                 .foregroundColor(ModernColors.heatColor(percentage: process.cpuUsage))
                         }
-
-                        Spacer()
                     }
                 }
             }
         }
+        .frame(height: 220)
         .glassCard()
     }
 
@@ -358,30 +364,37 @@ struct ContentView: View {
                 Spacer()
             }
 
-            VStack(spacing: 8) {
-                ForEach(Array(dataManager.processes.sorted { $0.memUsage > $1.memUsage }.prefix(5).enumerated()), id: \.element.id) { index, process in
-                    HStack(spacing: 8) {
-                        MiniGauge(
-                            value: process.memUsage,
-                            color: ModernColors.heatColor(percentage: process.memUsage)
-                        )
+            // Single dial showing top 5 vs rest
+            let top5Memory = dataManager.processes.sorted { $0.memUsage > $1.memUsage }.prefix(5).reduce(0.0) { $0 + $1.memUsage }
+            HStack {
+                CircularGauge(
+                    value: min(top5Memory, 100.0),
+                    color: ModernColors.pink,
+                    size: 80,
+                    lineWidth: 8,
+                    showValue: true,
+                    label: "top 5"
+                )
 
-                        VStack(alignment: .leading, spacing: 2) {
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 4) {
+                    ForEach(Array(dataManager.processes.sorted { $0.memUsage > $1.memUsage }.prefix(5).enumerated()), id: \.element.id) { index, process in
+                        HStack(spacing: 6) {
                             Text(process.command)
-                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .font(.system(size: 10, weight: .medium, design: .monospaced))
                                 .foregroundColor(ModernColors.textPrimary)
                                 .lineLimit(1)
 
-                            Text(String(format: "%.1f%% Memory", process.memUsage))
-                                .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                            Text(String(format: "%.1f%%", process.memUsage))
+                                .font(.system(size: 10, weight: .semibold, design: .monospaced))
                                 .foregroundColor(ModernColors.heatColor(percentage: process.memUsage))
                         }
-
-                        Spacer()
                     }
                 }
             }
         }
+        .frame(height: 220)
         .glassCard()
     }
 
@@ -399,11 +412,30 @@ struct ContentView: View {
                 Spacer()
             }
 
-            VStack(spacing: 8) {
-                miniStatRow(label: "Swapins", value: dataManager.systemStats.swapUsed.isEmpty ? "0M" : dataManager.systemStats.swapUsed, color: ModernColors.statusHigh)
-                miniStatRow(label: "Swapouts", value: dataManager.systemStats.swapFree.isEmpty ? "0M" : dataManager.systemStats.swapFree, color: ModernColors.statusLow)
+            // Dial showing swap activity ratio
+            HStack {
+                let swapinNum = Double(dataManager.systemStats.swapUsed.filter { $0.isNumber }) ?? 0
+                let swapoutNum = Double(dataManager.systemStats.swapFree.filter { $0.isNumber }) ?? 0
+                let swapTotal = swapinNum + swapoutNum
+                let swapPercent = swapTotal > 0 ? (swapinNum / swapTotal) * 100.0 : 0
+
+                CircularGauge(
+                    value: swapPercent,
+                    color: ModernColors.yellow,
+                    size: 80,
+                    lineWidth: 8,
+                    showValue: false
+                )
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 6) {
+                    miniStatRow(label: "Swapins", value: dataManager.systemStats.swapUsed.isEmpty ? "0M" : dataManager.systemStats.swapUsed, color: ModernColors.statusHigh)
+                    miniStatRow(label: "Swapouts", value: dataManager.systemStats.swapFree.isEmpty ? "0M" : dataManager.systemStats.swapFree, color: ModernColors.statusLow)
+                }
             }
         }
+        .frame(height: 220)
         .glassCard()
     }
 
@@ -429,18 +461,23 @@ struct ContentView: View {
                     color: ModernColors.statusLow,
                     size: 80,
                     lineWidth: 8,
-                    showValue: false
+                    showValue: true,
+                    label: "running"
                 )
 
-                VStack(alignment: .leading, spacing: 6) {
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 6) {
                     miniStatRow(label: "Running", value: "\(dataManager.systemStats.runningProcesses)", color: ModernColors.statusLow)
                     miniStatRow(label: "Sleeping", value: "\(dataManager.systemStats.sleeping)", color: ModernColors.cyan)
                     if dataManager.systemStats.stuckProcesses > 0 {
                         miniStatRow(label: "Stuck", value: "\(dataManager.systemStats.stuckProcesses)", color: ModernColors.statusCritical)
                     }
+                    miniStatRow(label: "Total", value: "\(dataManager.systemStats.processes)", color: ModernColors.textSecondary)
                 }
             }
         }
+        .frame(height: 220)
         .glassCard()
     }
 
@@ -502,13 +539,31 @@ struct ContentView: View {
                 Spacer()
             }
 
-            VStack(spacing: 6) {
-                miniStatRow(label: "Active", value: dataManager.systemStats.memPagesActive, color: ModernColors.statusHigh)
-                miniStatRow(label: "Inactive", value: dataManager.systemStats.memPagesInactive, color: ModernColors.cyan)
-                miniStatRow(label: "Wired", value: dataManager.systemStats.memPagesWired, color: ModernColors.purple)
-                miniStatRow(label: "Free", value: dataManager.systemStats.memPagesFree, color: ModernColors.statusLow)
+            // Dial showing memory pressure (active pages percentage)
+            HStack {
+                let activeNum = Double(dataManager.systemStats.memPagesActive.filter { $0.isNumber }) ?? 0
+                let totalPages = activeNum + (Double(dataManager.systemStats.memPagesFree.filter { $0.isNumber }) ?? 0)
+                let pressurePercent = totalPages > 0 ? (activeNum / totalPages) * 100.0 : 0
+
+                CircularGauge(
+                    value: pressurePercent,
+                    color: ModernColors.heatColor(percentage: pressurePercent),
+                    size: 80,
+                    lineWidth: 8,
+                    showValue: false
+                )
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 6) {
+                    miniStatRow(label: "Active", value: dataManager.systemStats.memPagesActive, color: ModernColors.statusHigh)
+                    miniStatRow(label: "Inactive", value: dataManager.systemStats.memPagesInactive, color: ModernColors.cyan)
+                    miniStatRow(label: "Wired", value: dataManager.systemStats.memPagesWired, color: ModernColors.purple)
+                    miniStatRow(label: "Free", value: dataManager.systemStats.memPagesFree, color: ModernColors.statusLow)
+                }
             }
         }
+        .frame(height: 220)
         .glassCard()
     }
 
@@ -526,17 +581,33 @@ struct ContentView: View {
                 Spacer()
             }
 
-            VStack(spacing: 8) {
-                miniStatRow(label: "Cores", value: "\(dataManager.systemStats.cpuCores)", color: ModernColors.cyan)
-                miniStatRow(label: "Threads", value: "\(dataManager.systemStats.threads)", color: ModernColors.purple)
-                if dataManager.systemStats.cpuTemperature > 0 {
-                    miniStatRow(label: "Temp", value: String(format: "%.1f°C", dataManager.systemStats.cpuTemperature), color: ModernColors.statusHigh)
-                }
-                if dataManager.systemStats.cpuFrequency > 0 {
-                    miniStatRow(label: "Frequency", value: String(format: "%.2f GHz", dataManager.systemStats.cpuFrequency), color: ModernColors.accentBlue)
+            // Dial showing thread utilization
+            HStack {
+                let threadPercent = dataManager.systemStats.cpuCores > 0 ? min((Double(dataManager.systemStats.threads) / Double(dataManager.systemStats.cpuCores * 100)) * 100.0, 100.0) : 0
+
+                CircularGauge(
+                    value: threadPercent,
+                    color: ModernColors.accentBlue,
+                    size: 80,
+                    lineWidth: 8,
+                    showValue: false
+                )
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 6) {
+                    miniStatRow(label: "Cores", value: "\(dataManager.systemStats.cpuCores)", color: ModernColors.cyan)
+                    miniStatRow(label: "Threads", value: "\(dataManager.systemStats.threads)", color: ModernColors.purple)
+                    if dataManager.systemStats.cpuTemperature > 0 {
+                        miniStatRow(label: "Temp", value: String(format: "%.1f°C", dataManager.systemStats.cpuTemperature), color: ModernColors.statusHigh)
+                    }
+                    if dataManager.systemStats.cpuFrequency > 0 {
+                        miniStatRow(label: "Frequency", value: String(format: "%.2f GHz", dataManager.systemStats.cpuFrequency), color: ModernColors.accentBlue)
+                    }
                 }
             }
         }
+        .frame(height: 220)
         .glassCard()
     }
 
