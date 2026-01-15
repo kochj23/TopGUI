@@ -13,9 +13,31 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var dataManager: TopDataManager
     @State private var selectedProcess: ProcessInfo?
+    @State private var selectedCard: CardType?
     @State private var searchText = ""
     @State private var sortColumn: SortColumn = .cpu
     @State private var sortAscending = false
+
+    enum CardType: Identifiable {
+        case cpu, memory, loadAverages, topCPU, topMemory, swap, states, memoryPressure, cpuInfo, perCore, diskActivity, networkBandwidth
+
+        var id: String {
+            switch self {
+            case .cpu: return "cpu"
+            case .memory: return "memory"
+            case .loadAverages: return "load"
+            case .topCPU: return "topCPU"
+            case .topMemory: return "topMemory"
+            case .swap: return "swap"
+            case .states: return "states"
+            case .memoryPressure: return "memoryPressure"
+            case .cpuInfo: return "cpuInfo"
+            case .perCore: return "perCore"
+            case .diskActivity: return "diskActivity"
+            case .networkBandwidth: return "networkBandwidth"
+            }
+        }
+    }
 
     enum SortColumn {
         case pid, command, cpu, memory, time
@@ -79,6 +101,10 @@ struct ContentView: View {
         }
         .sheet(item: $selectedProcess) { process in
             ProcessDetailView(process: process)
+                .environmentObject(dataManager)
+        }
+        .sheet(item: $selectedCard) { cardType in
+            CardDetailView(cardType: cardType)
                 .environmentObject(dataManager)
         }
     }
@@ -199,6 +225,9 @@ struct ContentView: View {
         }
         .frame(height: 220)
         .glassCard()
+        .onTapGesture {
+            selectedCard = .cpu
+        }
     }
 
     // MARK: - Memory Card
@@ -240,6 +269,9 @@ struct ContentView: View {
         }
         .frame(height: 220)
         .glassCard()
+        .onTapGesture {
+            selectedCard = .memory
+        }
     }
 
     // MARK: - Load Averages Card
@@ -300,6 +332,9 @@ struct ContentView: View {
         }
         .frame(height: 220)
         .glassCard()
+        .onTapGesture {
+            selectedCard = .loadAverages
+        }
     }
 
     // MARK: - Top CPU Processes Card
@@ -348,6 +383,9 @@ struct ContentView: View {
         }
         .frame(height: 220)
         .glassCard()
+        .onTapGesture {
+            selectedCard = .topCPU
+        }
     }
 
     // MARK: - Top Memory Processes Card
@@ -396,6 +434,9 @@ struct ContentView: View {
         }
         .frame(height: 220)
         .glassCard()
+        .onTapGesture {
+            selectedCard = .topMemory
+        }
     }
 
     // MARK: - Swap Usage Card
@@ -437,6 +478,9 @@ struct ContentView: View {
         }
         .frame(height: 220)
         .glassCard()
+        .onTapGesture {
+            selectedCard = .swap
+        }
     }
 
     // MARK: - Process States Card
@@ -479,6 +523,9 @@ struct ContentView: View {
         }
         .frame(height: 220)
         .glassCard()
+        .onTapGesture {
+            selectedCard = .states
+        }
     }
 
     // MARK: - Network Stats Card
@@ -565,6 +612,9 @@ struct ContentView: View {
         }
         .frame(height: 220)
         .glassCard()
+        .onTapGesture {
+            selectedCard = .memoryPressure
+        }
     }
 
     // MARK: - CPU Cores Info Card
@@ -609,6 +659,9 @@ struct ContentView: View {
         }
         .frame(height: 220)
         .glassCard()
+        .onTapGesture {
+            selectedCard = .cpuInfo
+        }
     }
 
     // MARK: - Per-Core CPU Grid Card
@@ -647,6 +700,9 @@ struct ContentView: View {
             }
         }
         .glassCard(prominent: true)
+        .onTapGesture {
+            selectedCard = .perCore
+        }
     }
 
     // MARK: - Disk Activity Card
@@ -699,6 +755,9 @@ struct ContentView: View {
             }
         }
         .glassCard()
+        .onTapGesture {
+            selectedCard = .diskActivity
+        }
     }
 
     // MARK: - Network Bandwidth Card
@@ -758,6 +817,9 @@ struct ContentView: View {
             }
         }
         .glassCard()
+        .onTapGesture {
+            selectedCard = .networkBandwidth
+        }
     }
 
     // MARK: - Quick Actions Card
