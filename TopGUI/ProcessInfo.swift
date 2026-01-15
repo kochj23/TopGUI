@@ -46,6 +46,21 @@ struct SystemStats {
     var swapUsed: String = ""
     var swapFree: String = ""
 
+    // Load averages
+    var loadAvg1min: Double = 0.0
+    var loadAvg5min: Double = 0.0
+    var loadAvg15min: Double = 0.0
+
+    // Network stats (if available)
+    var networkPacketsIn: String = ""
+    var networkPacketsOut: String = ""
+    var networkDataIn: String = ""
+    var networkDataOut: String = ""
+
+    // Disk stats (if available)
+    var diskReads: String = ""
+    var diskWrites: String = ""
+
     var totalCPU: Double {
         return cpuUser + cpuSystem
     }

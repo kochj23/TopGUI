@@ -12,42 +12,43 @@
 import SwiftUI
 
 struct ModernColors {
-    // Light blue gradient background
-    static let gradientStart = Color(red: 0.6, green: 0.85, blue: 1.0)  // Light sky blue
-    static let gradientMid = Color(red: 0.7, green: 0.88, blue: 1.0)    // Lighter blue
-    static let gradientEnd = Color(red: 0.8, green: 0.92, blue: 1.0)    // Very light blue
+    // Dark blue gradient background (CleanMyMac style)
+    static let gradientStart = Color(red: 0.08, green: 0.12, blue: 0.22) // Dark navy
+    static let gradientMid = Color(red: 0.10, green: 0.15, blue: 0.28)   // Navy blue
+    static let gradientEnd = Color(red: 0.12, green: 0.18, blue: 0.32)   // Lighter navy
 
-    // Playful accent colors
-    static let orange = Color(red: 1.0, green: 0.65, blue: 0.3)         // Warm orange
-    static let yellow = Color(red: 1.0, green: 0.85, blue: 0.4)         // Sunny yellow
-    static let pink = Color(red: 1.0, green: 0.45, blue: 0.55)          // Coral pink
-    static let lightBlue = Color(red: 0.4, green: 0.75, blue: 1.0)      // Sky blue
-    static let mint = Color(red: 0.5, green: 0.9, blue: 0.75)           // Mint green
-    static let accent = Color(red: 1.0, green: 0.65, blue: 0.3)         // Orange (for compatibility)
-    static let accentBlue = Color(red: 0.4, green: 0.75, blue: 1.0)     // Sky blue
-    static let accentGreen = Color(red: 0.5, green: 0.9, blue: 0.75)    // Mint
-    static let accentOrange = Color(red: 1.0, green: 0.65, blue: 0.3)   // Orange
+    // Vibrant accent colors (CleanMyMac style)
+    static let cyan = Color(red: 0.3, green: 0.85, blue: 0.95)          // Bright cyan
+    static let teal = Color(red: 0.2, green: 0.8, blue: 0.8)            // Teal
+    static let purple = Color(red: 0.6, green: 0.4, blue: 0.95)         // Purple
+    static let orange = Color(red: 1.0, green: 0.6, blue: 0.2)          // Warm orange
+    static let yellow = Color(red: 1.0, green: 0.85, blue: 0.3)         // Bright yellow
+    static let pink = Color(red: 1.0, green: 0.35, blue: 0.65)          // Hot pink
+    static let accent = Color(red: 0.3, green: 0.85, blue: 0.95)        // Cyan (primary)
+    static let accentBlue = Color(red: 0.3, green: 0.7, blue: 1.0)      // Blue
+    static let accentGreen = Color(red: 0.3, green: 0.9, blue: 0.6)     // Green
+    static let accentOrange = Color(red: 1.0, green: 0.6, blue: 0.2)    // Orange
 
-    // Background blob colors
-    static let blobOrange = Color(red: 1.0, green: 0.65, blue: 0.3)
-    static let blobYellow = Color(red: 1.0, green: 0.85, blue: 0.4)
-    static let blobPink = Color(red: 1.0, green: 0.5, blue: 0.6)
-    static let blobPurple = Color(red: 0.8, green: 0.6, blue: 1.0)
+    // Background blob colors (vibrant for dark background)
+    static let blobCyan = Color(red: 0.2, green: 0.7, blue: 0.9)
+    static let blobPurple = Color(red: 0.5, green: 0.3, blue: 0.8)
+    static let blobPink = Color(red: 0.9, green: 0.3, blue: 0.6)
+    static let blobOrange = Color(red: 0.9, green: 0.5, blue: 0.2)
 
-    // Status colors for heat maps (softer)
-    static let statusLow = Color(red: 0.5, green: 0.9, blue: 0.75)      // Mint
-    static let statusMedium = Color(red: 1.0, green: 0.85, blue: 0.4)   // Yellow
-    static let statusHigh = Color(red: 1.0, green: 0.65, blue: 0.3)     // Orange
-    static let statusCritical = Color(red: 1.0, green: 0.45, blue: 0.55) // Pink/Red
+    // Status colors (CleanMyMac health indicators)
+    static let statusLow = Color(red: 0.3, green: 0.9, blue: 0.6)       // Bright green
+    static let statusMedium = Color(red: 1.0, green: 0.85, blue: 0.3)   // Yellow
+    static let statusHigh = Color(red: 1.0, green: 0.6, blue: 0.2)      // Orange
+    static let statusCritical = Color(red: 1.0, green: 0.3, blue: 0.4)  // Red
 
-    // Text colors (dark for light background)
-    static let textPrimary = Color(red: 0.15, green: 0.15, blue: 0.2)   // Dark gray
-    static let textSecondary = Color(red: 0.4, green: 0.4, blue: 0.5)   // Medium gray
-    static let textTertiary = Color(red: 0.6, green: 0.6, blue: 0.65)   // Light gray
+    // Text colors (light for dark background)
+    static let textPrimary = Color.white
+    static let textSecondary = Color.white.opacity(0.7)
+    static let textTertiary = Color.white.opacity(0.5)
 
-    // Glass card colors (even more translucent)
-    static let glassBackground = Color.white.opacity(0.25)
-    static let glassBorder = Color.white.opacity(0.5)
+    // Glass card colors (darker, more opaque)
+    static let glassBackground = Color.white.opacity(0.05)
+    static let glassBorder = Color.white.opacity(0.15)
 
     // Get color for percentage (heat map)
     static func heatColor(percentage: Double) -> Color {
@@ -213,9 +214,9 @@ struct GlassmorphicBackground: View {
             ModernColors.backgroundGradient
                 .ignoresSafeArea()
 
-            // Large floating blobs
+            // Large floating blobs (dark theme colors)
             FloatingBlob(
-                color: ModernColors.blobOrange,
+                color: ModernColors.blobCyan,
                 size: 400,
                 x: animateBlobs ? -100 : -150,
                 y: animateBlobs ? -200 : -250,
@@ -223,7 +224,7 @@ struct GlassmorphicBackground: View {
             )
 
             FloatingBlob(
-                color: ModernColors.blobYellow,
+                color: ModernColors.blobPurple,
                 size: 350,
                 x: animateBlobs ? 150 : 100,
                 y: animateBlobs ? -150 : -100,
@@ -239,7 +240,7 @@ struct GlassmorphicBackground: View {
             )
 
             FloatingBlob(
-                color: ModernColors.blobPurple,
+                color: ModernColors.blobOrange,
                 size: 300,
                 x: animateBlobs ? -200 : -150,
                 y: animateBlobs ? 250 : 300,
@@ -247,7 +248,7 @@ struct GlassmorphicBackground: View {
             )
 
             FloatingBlob(
-                color: ModernColors.blobOrange.opacity(0.7),
+                color: ModernColors.blobCyan.opacity(0.7),
                 size: 250,
                 x: animateBlobs ? 200 : 250,
                 y: animateBlobs ? 100 : 50,

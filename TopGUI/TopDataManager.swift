@@ -138,6 +138,56 @@ class TopDataManager: ObservableObject {
                         }
                     }
                 }
+            } else if line.contains("Load Avg:") {
+                // Format: "Load Avg: 2.34, 2.56, 2.78"
+                let pattern = "Load Avg:\\s*([0-9.]+),\\s*([0-9.]+),\\s*([0-9.]+)"
+                if let regex = try? NSRegularExpression(pattern: pattern),
+                   let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)) {
+                    if let range1 = Range(match.range(at: 1), in: line) {
+                        stats.loadAvg1min = Double(line[range1]) ?? 0.0
+                    }
+                    if let range2 = Range(match.range(at: 2), in: line) {
+                        stats.loadAvg5min = Double(line[range2]) ?? 0.0
+                    }
+                    if let range3 = Range(match.range(at: 3), in: line) {
+                        stats.loadAvg15min = Double(line[range3]) ?? 0.0
+                    }
+                }
+            } else if line.contains("VM:") {
+                // Format: "VM: 1234M vsize, 567M framework vsize, 89M swapins, 12M swapouts"
+                let components = line.components(separatedBy: ", ")
+                for component in components {
+                    if component.contains("swapins") {
+                        stats.swapUsed = extractMemory(from: component) ?? ""
+                    } else if component.contains("swapouts") {
+                        stats.swapFree = extractMemory(from: component) ?? ""
+                    }
+                }
+            } else if line.contains("Networks:") {
+                // Format: "Networks: packets: 1234/5678 in, 2345/6789 out"
+                if line.contains("packets:") {
+                    let components = line.components(separatedBy: " ")
+                    for (index, component) in components.enumerated() {
+                        if component == "packets:" && index + 1 < components.count {
+                            let packets = components[index + 1]
+                            let parts = packets.split(separator: "/")
+                            if parts.count >= 2 {
+                                stats.networkPacketsIn = String(parts[0])
+                                stats.networkPacketsOut = String(parts[1])
+                            }
+                        }
+                    }
+                }
+            } else if line.contains("Disks:") {
+                // Format: "Disks: 1234/567M read, 2345/678M written"
+                let components = line.components(separatedBy: ", ")
+                for component in components {
+                    if component.contains("read") {
+                        stats.diskReads = extractMemory(from: component) ?? ""
+                    } else if component.contains("written") {
+                        stats.diskWrites = extractMemory(from: component) ?? ""
+                    }
+                }
             }
 
             // Parse process lines (skip headers and empty lines)
