@@ -5,30 +5,47 @@
 ![Platform](https://img.shields.io/badge/platform-macOS%2013.0%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.0-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-2.1.0-skyblue)
+![Version](https://img.shields.io/badge/version-2.2.0-darkblue)
 
-TopGUI provides real-time system monitoring with an **extreme glassmorphic interface** featuring massive floating colorful blobs, light blue gradients, and ultra-smooth animations. Inspired by modern iOS design and playful contemporary dashboards.
+TopGUI provides comprehensive real-time system monitoring with a **CleanMyMac-inspired dark blue theme** featuring a 3-column grid layout, 9 stat cards, floating colorful blobs, and glassmorphic design. Professional, beautiful, and highly informative.
 
 ## Features
 
-### 🎨 Extreme Glassmorphic Design
-- **Floating Animated Blobs**: 5 massive colorful circles (orange, yellow, pink, purple) that gently float
-- **Light Blue Gradient**: Soft sky blue background for airy, playful feel
-- **Ultra-Translucent Cards**: 25% white opacity with .ultraThinMaterial blur
-- **Thick White Borders**: 2px borders for strong definition
+### 🎨 CleanMyMac-Inspired Design
+- **Dark Navy Blue Theme**: Professional dark background (rgb 0.08-0.12, 0.12-0.18, 0.22-0.32)
+- **3-Column Grid Layout**: Responsive LazyVGrid with organized stat cards
+- **Floating Animated Blobs**: 5 massive colorful circles (cyan, purple, pink, orange) that gently float
+- **Ultra-Translucent Glass Cards**: 25% white opacity with .ultraThinMaterial blur
+- **Thick White Borders**: 2px borders for strong definition on dark background
 - **Dual Shadows**: Black shadow + white highlight for true 3D depth
-- **Minimal Shadow Opacity**: 0.05 opacity for floating effect
-- **Soft Colors**: Mint green, sunny yellow, coral pink, warm orange
-- **Dark Text on Light**: Excellent readability with dark gray text
-- **Heat Map Visualizations**: Green → yellow → orange → pink/red
+- **Vibrant Accent Colors**: Cyan, purple, hot pink, orange, yellow, mint green
+- **White Text**: High contrast for excellent readability on dark background
+- **Heat Map Visualizations**: Green → yellow → orange → red
 - **Modern Rounded Typography**: 32px headers with rounded San Francisco font
 
-### 📊 Real-Time System Monitoring
-- **CPU Status**: Total usage with user/system/idle breakdown
-- **Memory Status**: Physical memory tracking (used, free, wired, compressed)
-- **Process List**: Full process table with live updates (1-second refresh)
-- **Search & Filter**: Quick search across process names, PIDs, and users
-- **Sortable Columns**: Sort by any metric (PID, CPU, memory, time)
+### 📊 Comprehensive System Monitoring (9 Stat Cards)
+
+**Resource Monitoring:**
+1. **CPU Usage**: Circular gauge with user/system/idle breakdown
+2. **Memory Status**: Physical memory (used, free, wired, compressed)
+3. **Load Averages**: 1min, 5min, 15min system load tracking
+
+**Process Intelligence:**
+4. **Top 5 CPU Processes**: Ranked list of CPU-intensive processes with heat map
+5. **Top 5 Memory Processes**: Ranked list of memory consumers with heat map
+6. **Process States**: Running/sleeping/stuck/threads breakdown
+
+**System I/O:**
+7. **Swap Usage**: Swapins and swapouts tracking
+8. **Network Stats**: Packets in/out monitoring
+9. **Disk I/O**: Read/write operations tracking
+
+**Additional Features:**
+- **Quick Actions Card**: Kill High CPU, Refresh, Export buttons
+- **Full Process List**: Searchable, sortable table with real-time updates
+- **Search & Filter**: Quick search across process names, PIDs, users
+- **Sortable Columns**: Sort by PID, command, CPU%, memory%, time
+- **Heat-Mapped Values**: Color-coded indicators for all metrics
 
 ### ⚙️ Process Management
 - **Detailed Views**: Click any process for comprehensive statistics
@@ -38,16 +55,20 @@ TopGUI provides real-time system monitoring with an **extreme glassmorphic inter
 
 ## Screenshots
 
-*Dashboard View*: Extreme glassmorphism with floating colorful blobs, light blue gradient, ultra-translucent cards, and playful accents
+*Dashboard View*: CleanMyMac-inspired 3-column grid with 9 stat cards, dark navy blue background, floating colorful blobs, and glassmorphic cards
 
-*Process Detail*: Light, airy modal with soft colors, dual-shadow glass cards, and animated background blobs
+*Stat Cards*: CPU gauge, Memory, Load Averages, Top 5 CPU/Memory processes, Swap, States, Network, Disk I/O
 
-*Floating Blobs*: 5 massive animated circles creating a dreamy, playful atmosphere
+*Quick Actions*: Kill High CPU, Refresh, and Export buttons in full-width card
+
+*Process List*: Searchable, sortable table with heat-mapped CPU and memory indicators
+
+*Floating Blobs*: 5 massive animated circles (cyan, purple, pink, orange) creating atmospheric depth
 
 ## Installation
 
 ### From DMG (Recommended)
-1. Download `TopGUI-v2.1.0-build3.dmg` from releases
+1. Download `TopGUI-v2.2.0-build4.dmg` from releases
 2. Mount the DMG and drag TopGUI.app to Applications
 3. Launch TopGUI from Applications folder
 
@@ -143,6 +164,7 @@ Future enhancements:
 Design inspired by modern glassmorphism trends, macOS Ventura aesthetics, and contemporary monitoring dashboards. Built with SwiftUI and love for beautiful interfaces.
 
 **Version History:**
+- v2.2.0: CleanMyMac-inspired grid layout with 9 stat cards and dark blue theme
 - v2.1.0: Extreme glassmorphism with floating colorful blobs and light theme
 - v2.0.0: Modern glassmorphic redesign with purple gradients
 - v1.0.0: Original LCARS Star Trek TNG-inspired design
@@ -178,9 +200,10 @@ For issues, feature requests, or contributions, please open an issue on GitHub.
 ---
 
 **Build Information:**
-- Version: 2.1.0
-- Build: 3
+- Version: 2.2.0
+- Build: 4
 - Build Date: January 15, 2026
-- Design: Extreme Glassmorphic with Floating Blobs
+- Design: CleanMyMac-Inspired Dark Blue Grid Layout
+- Cards: 9 stat cards + Quick Actions + Process List
 - Minimum macOS: 13.0
 - Architecture: Universal (Apple Silicon & Intel)
