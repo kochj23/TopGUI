@@ -287,7 +287,7 @@ struct HexagonShape: Shape {
     }
 }
 
-// Reusable circular gauge component
+// Reusable circular gauge component with smooth animations
 struct CircularGauge: View {
     let value: Double // 0-100
     let color: Color
@@ -295,6 +295,8 @@ struct CircularGauge: View {
     let lineWidth: CGFloat
     let showValue: Bool
     let label: String?
+
+    @State private var animatedValue: Double = 0
 
     init(value: Double, color: Color, size: CGFloat = 80, lineWidth: CGFloat = 8, showValue: Bool = true, label: String? = nil) {
         self.value = value
@@ -311,19 +313,21 @@ struct CircularGauge: View {
                 .stroke(Color.white.opacity(0.1), lineWidth: lineWidth)
 
             Circle()
-                .trim(from: 0, to: min(value / 100.0, 1.0))
+                .trim(from: 0, to: min(animatedValue / 100.0, 1.0))
                 .stroke(
                     color,
                     style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
                 .shadow(color: color.opacity(0.6), radius: 6)
+                .animation(.easeInOut(duration: 0.6), value: animatedValue)
 
             if showValue {
                 VStack(spacing: 2) {
-                    Text(String(format: "%.0f", value))
+                    Text(String(format: "%.0f", animatedValue))
                         .font(.system(size: size > 60 ? 24 : 16, weight: .bold, design: .rounded))
                         .foregroundColor(ModernColors.textPrimary)
+                        .animation(.easeInOut(duration: 0.6), value: animatedValue)
 
                     if let label = label {
                         Text(label)
@@ -334,13 +338,23 @@ struct CircularGauge: View {
             }
         }
         .frame(width: size, height: size)
+        .onAppear {
+            animatedValue = value
+        }
+        .onChange(of: value) { newValue in
+            withAnimation(.easeInOut(duration: 0.6)) {
+                animatedValue = newValue
+            }
+        }
     }
 }
 
-// Mini circular gauge (for compact cards)
+// Mini circular gauge (for compact cards) with smooth animations
 struct MiniGauge: View {
     let value: Double
     let color: Color
+
+    @State private var animatedValue: Double = 0
 
     var body: some View {
         ZStack {
@@ -348,11 +362,20 @@ struct MiniGauge: View {
                 .stroke(Color.white.opacity(0.1), lineWidth: 4)
 
             Circle()
-                .trim(from: 0, to: min(value / 100.0, 1.0))
+                .trim(from: 0, to: min(animatedValue / 100.0, 1.0))
                 .stroke(color, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                 .rotationEffect(.degrees(-90))
                 .shadow(color: color.opacity(0.5), radius: 3)
+                .animation(.easeInOut(duration: 0.6), value: animatedValue)
         }
         .frame(width: 40, height: 40)
+        .onAppear {
+            animatedValue = value
+        }
+        .onChange(of: value) { newValue in
+            withAnimation(.easeInOut(duration: 0.6)) {
+                animatedValue = newValue
+            }
+        }
     }
 }
