@@ -5,19 +5,23 @@
 ![Platform](https://img.shields.io/badge/platform-macOS%2013.0%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.0-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-2.0.0-purple)
+![Version](https://img.shields.io/badge/version-2.1.0-skyblue)
 
-TopGUI provides real-time system monitoring with a beautiful glassmorphic interface inspired by modern macOS design. Features frosted glass cards, purple gradients, and smooth animations for an elegant monitoring experience.
+TopGUI provides real-time system monitoring with an **extreme glassmorphic interface** featuring massive floating colorful blobs, light blue gradients, and ultra-smooth animations. Inspired by modern iOS design and playful contemporary dashboards.
 
 ## Features
 
-### 🎨 Modern Glassmorphic Design
-- Frosted glass cards with blur effects (.ultraThinMaterial)
-- Purple gradient background (deep to light purple)
-- Soft shadows and 3D depth
-- Smooth animations and transitions
-- Heat map visualizations (green → yellow → orange → red)
-- Modern rounded typography
+### 🎨 Extreme Glassmorphic Design
+- **Floating Animated Blobs**: 5 massive colorful circles (orange, yellow, pink, purple) that gently float
+- **Light Blue Gradient**: Soft sky blue background for airy, playful feel
+- **Ultra-Translucent Cards**: 25% white opacity with .ultraThinMaterial blur
+- **Thick White Borders**: 2px borders for strong definition
+- **Dual Shadows**: Black shadow + white highlight for true 3D depth
+- **Minimal Shadow Opacity**: 0.05 opacity for floating effect
+- **Soft Colors**: Mint green, sunny yellow, coral pink, warm orange
+- **Dark Text on Light**: Excellent readability with dark gray text
+- **Heat Map Visualizations**: Green → yellow → orange → pink/red
+- **Modern Rounded Typography**: 32px headers with rounded San Francisco font
 
 ### 📊 Real-Time System Monitoring
 - **CPU Status**: Total usage with user/system/idle breakdown
@@ -34,14 +38,16 @@ TopGUI provides real-time system monitoring with a beautiful glassmorphic interf
 
 ## Screenshots
 
-*Dashboard View*: Modern glassmorphic interface with purple gradients, circular CPU gauge, and frosted glass cards
+*Dashboard View*: Extreme glassmorphism with floating colorful blobs, light blue gradient, ultra-translucent cards, and playful accents
 
-*Process Detail*: Clean process detail modal with gradient bars, status badges, and modern controls
+*Process Detail*: Light, airy modal with soft colors, dual-shadow glass cards, and animated background blobs
+
+*Floating Blobs*: 5 massive animated circles creating a dreamy, playful atmosphere
 
 ## Installation
 
 ### From DMG (Recommended)
-1. Download `TopGUI-v2.0.0-build2.dmg` from releases
+1. Download `TopGUI-v2.1.0-build3.dmg` from releases
 2. Mount the DMG and drag TopGUI.app to Applications
 3. Launch TopGUI from Applications folder
 
@@ -137,6 +143,7 @@ Future enhancements:
 Design inspired by modern glassmorphism trends, macOS Ventura aesthetics, and contemporary monitoring dashboards. Built with SwiftUI and love for beautiful interfaces.
 
 **Version History:**
+- v2.1.0: Extreme glassmorphism with floating colorful blobs and light theme
 - v2.0.0: Modern glassmorphic redesign with purple gradients
 - v1.0.0: Original LCARS Star Trek TNG-inspired design
 
@@ -171,9 +178,9 @@ For issues, feature requests, or contributions, please open an issue on GitHub.
 ---
 
 **Build Information:**
-- Version: 2.0.0
-- Build: 2
+- Version: 2.1.0
+- Build: 3
 - Build Date: January 15, 2026
-- Design: Modern Glassmorphic
+- Design: Extreme Glassmorphic with Floating Blobs
 - Minimum macOS: 13.0
 - Architecture: Universal (Apple Silicon & Intel)
