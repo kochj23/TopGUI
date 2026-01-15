@@ -5,15 +5,18 @@
 ![Platform](https://img.shields.io/badge/platform-macOS%2013.0%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.0-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-2.2.0-darkblue)
+![Version](https://img.shields.io/badge/version-3.7.0-darkblue)
 
-TopGUI provides comprehensive real-time system monitoring with a **CleanMyMac-inspired dark blue theme** featuring a 3-column grid layout, 9 stat cards, floating colorful blobs, and glassmorphic design. Professional, beautiful, and highly informative.
+TopGUI provides comprehensive real-time system monitoring with a **CleanMyMac-inspired dark blue theme** featuring a 4-column grid layout, 12 stat cards, 50+ smooth circular dial gauges, floating animated blobs, and extreme glassmorphic design. Professional, beautiful, and highly informative.
+
+![TopGUI Dashboard](Screenshots/dashboard.png)
 
 ## Features
 
 ### 🎨 CleanMyMac-Inspired Design
 - **Dark Navy Blue Theme**: Professional dark background (rgb 0.08-0.12, 0.12-0.18, 0.22-0.32)
-- **3-Column Grid Layout**: Responsive LazyVGrid with organized stat cards
+- **4-Column Grid Layout**: 12 stat cards in responsive LazyVGrid
+- **50+ Smooth Circular Dial Gauges**: All gauges animate smoothly with 0.6s easeInOut transitions
 - **Floating Animated Blobs**: 5 massive colorful circles (cyan, purple, pink, orange) that gently float
 - **Ultra-Translucent Glass Cards**: 25% white opacity with .ultraThinMaterial blur
 - **Thick White Borders**: 2px borders for strong definition on dark background
@@ -22,30 +25,41 @@ TopGUI provides comprehensive real-time system monitoring with a **CleanMyMac-in
 - **White Text**: High contrast for excellent readability on dark background
 - **Heat Map Visualizations**: Green → yellow → orange → red
 - **Modern Rounded Typography**: 32px headers with rounded San Francisco font
+- **Clickable Cards**: Tap any card for detailed view
 
-### 📊 Comprehensive System Monitoring (9 Stat Cards)
+### 📊 Comprehensive System Monitoring (12 Stat Cards)
 
-**Resource Monitoring:**
-1. **CPU Usage**: Circular gauge with user/system/idle breakdown
-2. **Memory Status**: Physical memory (used, free, wired, compressed)
-3. **Load Averages**: 1min, 5min, 15min system load tracking
+**4-Column Grid Layout:**
 
-**Process Intelligence:**
-4. **Top 5 CPU Processes**: Ranked list of CPU-intensive processes with heat map
-5. **Top 5 Memory Processes**: Ranked list of memory consumers with heat map
-6. **Process States**: Running/sleeping/stuck/threads breakdown
+**Row 1:**
+1. **CPU Usage**: Large circular gauge with user/system/idle breakdown
+2. **Memory**: Circular gauge showing memory usage with breakdown
+3. **Load Averages**: Three 65px dials for 1min, 5min, 15min
+4. **Top CPU**: Shows % of total CPU capacity used by top 5 processes
 
-**System I/O:**
-7. **Swap Usage**: Swapins and swapouts tracking
-8. **Network Stats**: Packets in/out monitoring
-9. **Disk I/O**: Read/write operations tracking
+**Row 2:**
+5. **Top Memory**: Shows % of total memory used by top 5 processes
+6. **Swap**: Swap usage with dial showing used vs free
+7. **Process States**: Running vs sleeping with breakdown
+8. **Memory Pressure**: Detailed vm_stat memory pressure analysis
 
-**Additional Features:**
-- **Quick Actions Card**: Kill High CPU, Refresh, Export buttons
-- **Full Process List**: Searchable, sortable table with real-time updates
-- **Search & Filter**: Quick search across process names, PIDs, users
-- **Sortable Columns**: Sort by PID, command, CPU%, memory%, time
-- **Heat-Mapped Values**: Color-coded indicators for all metrics
+**Row 3:**
+9. **CPU Info**: System-wide CPU usage with cores/threads/processes stats
+10. **Disk Usage**: Per-disk space gauges (main volumes only, updates every 5 min)
+11. **Network**: Combined bandwidth with download/upload/total
+12. **System Health**: Overall health score based on CPU/Memory/Disk
+
+**Full Width:**
+- **Per-Core CPU**: 32 cores displayed in 8×4 grid with individual gauges
+
+**Menu Bar:**
+- **Actions Menu**: Kill High CPU (⌘K), Refresh (⌘R), Export (⌘E)
+
+**All Features:**
+- **Smooth Animations**: All 50+ gauges animate with 0.6s easeInOut transitions
+- **Clickable Cards**: Tap any card for detailed view with expanded metrics
+- **Heat-Mapped Values**: Color-coded indicators throughout (green → yellow → orange → red)
+- **Real-Time Updates**: CPU, memory, network update every second; disk every 5 minutes
 
 ### ⚙️ Process Management
 - **Detailed Views**: Click any process for comprehensive statistics
@@ -55,20 +69,23 @@ TopGUI provides comprehensive real-time system monitoring with a **CleanMyMac-in
 
 ## Screenshots
 
-*Dashboard View*: CleanMyMac-inspired 3-column grid with 9 stat cards, dark navy blue background, floating colorful blobs, and glassmorphic cards
+**Dashboard View** - 4-column grid with 12 glassmorphic cards, each with smooth circular dial gauges:
 
-*Stat Cards*: CPU gauge, Memory, Load Averages, Top 5 CPU/Memory processes, Swap, States, Network, Disk I/O
+![TopGUI Dashboard](Screenshots/dashboard.png)
 
-*Quick Actions*: Kill High CPU, Refresh, and Export buttons in full-width card
-
-*Process List*: Searchable, sortable table with heat-mapped CPU and memory indicators
-
-*Floating Blobs*: 5 massive animated circles (cyan, purple, pink, orange) creating atmospheric depth
+**Features Visible:**
+- 12 stat cards in 4×3 grid layout
+- 50+ smooth animated circular gauges
+- Dark navy blue background with floating colorful blobs
+- Per-core CPU visualization (32 cores in 8×4 grid)
+- Real-time system monitoring with heat-mapped colors
+- Glassmorphic frosted glass cards with soft shadows
+- All cards clickable for detailed views
 
 ## Installation
 
 ### From DMG (Recommended)
-1. Download `TopGUI-v2.2.0-build4.dmg` from releases
+1. Download `TopGUI-v3.7.0-build12.dmg` from releases
 2. Mount the DMG and drag TopGUI.app to Applications
 3. Launch TopGUI from Applications folder
 
@@ -164,8 +181,13 @@ Future enhancements:
 Design inspired by modern glassmorphism trends, macOS Ventura aesthetics, and contemporary monitoring dashboards. Built with SwiftUI and love for beautiful interfaces.
 
 **Version History:**
-- v2.2.0: CleanMyMac-inspired grid layout with 9 stat cards and dark blue theme
-- v2.1.0: Extreme glassmorphism with floating colorful blobs and light theme
+- v3.7.0: Fixed Top CPU capacity dial, improved CPU Info card, smooth animations, stable disk updates
+- v3.6.0: 4-column layout with System Health card, integers for readability
+- v3.5.0: Moved Quick Actions to menu bar, 4-column grid
+- v3.2.0: Interactive clickable cards with detailed views
+- v3.0.0: Major release with 50+ circular dial gauges
+- v2.2.0: CleanMyMac-inspired grid layout with 9 stat cards
+- v2.1.0: Extreme glassmorphism with floating colorful blobs
 - v2.0.0: Modern glassmorphic redesign with purple gradients
 - v1.0.0: Original LCARS Star Trek TNG-inspired design
 
@@ -200,10 +222,12 @@ For issues, feature requests, or contributions, please open an issue on GitHub.
 ---
 
 **Build Information:**
-- Version: 2.2.0
-- Build: 4
+- Version: 3.7.0
+- Build: 12
 - Build Date: January 15, 2026
-- Design: CleanMyMac-Inspired Dark Blue Grid Layout
-- Cards: 9 stat cards + Quick Actions + Process List
+- Design: CleanMyMac-Inspired Dark Blue with 4-Column Grid
+- Cards: 12 stat cards with 50+ smooth animated dial gauges
+- Layout: 4-column grid + full-width per-core CPU
 - Minimum macOS: 13.0
 - Architecture: Universal (Apple Silicon & Intel)
+- Distribution: Direct download (GitHub), Homebrew, or SetApp
