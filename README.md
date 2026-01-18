@@ -1,15 +1,59 @@
 # TopGUI
 
-**A visually stunning, modern glassmorphic system monitor for macOS**
+**A visually stunning, modern glassmorphic system monitor for macOS with AI-powered insights**
 
 ![Platform](https://img.shields.io/badge/platform-macOS%2013.0%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.0-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-3.7.0-darkblue)
+![Version](https://img.shields.io/badge/version-3.8.0-darkblue)
 
-TopGUI provides comprehensive real-time system monitoring with a **CleanMyMac-inspired dark blue theme** featuring a 4-column grid layout, 12 stat cards, 50+ smooth circular dial gauges, floating animated blobs, and extreme glassmorphic design. Professional, beautiful, and highly informative.
+TopGUI provides comprehensive real-time system monitoring with a **CleanMyMac-inspired dark blue theme** featuring a 4-column grid layout, 12 stat cards, 50+ smooth circular dial gauges, floating animated blobs, and extreme glassmorphic design. **Now enhanced with AI-powered performance insights!**
 
 ![TopGUI Dashboard](Screenshots/dashboard.png)
+
+## Features
+
+### 🤖 AI Performance Insights (NEW in v3.8.0)
+
+TopGUI now includes **4 AI-powered features** for intelligent system analysis:
+
+#### 1. AI Performance Insights 💡
+- Natural language explanations of system performance
+- "Your Mac is slow because Safari is using 8.2GB RAM across 47 tabs..."
+- Identifies root causes, not just symptoms
+- Specific process and metric references
+
+#### 2. AI Anomaly Detection 🚨
+- Detects unusual patterns compared to baseline
+- Early warning for memory leaks, CPU spikes, runaway processes
+- Severity levels: Low, Medium, High, Critical
+- Likely cause identification
+
+#### 3. AI Optimization Advice 🎯
+- 3-5 specific, actionable recommendations
+- Prioritized by impact and difficulty
+- Explains WHY each optimization helps
+- Example: "Close unused Safari tabs to free 8GB RAM (Impact: High, Difficulty: Easy)"
+
+#### 4. AI Q&A Interface 💬
+- Ask questions in natural language
+- "Why is my Mac slow?" "Should I upgrade RAM?" "What's using all my CPU?"
+- Context-aware answers from actual system metrics
+- Interactive troubleshooting
+
+#### AI Backend Support
+Choose from 3 AI backends:
+- **Ollama** - Fast GPU-accelerated (localhost:11434)
+- **TinyLLM** by Jason Cox - Lightweight Docker (localhost:8000)
+- **MLX Toolkit** - Python-based Apple Silicon optimization
+
+**Setup:** See AI_FEATURES_PLAN.md for complete documentation
+
+**Third-Party:** TinyLLM by Jason Cox (https://github.com/jasonacox/TinyLLM)
+
+**Privacy:** All AI processing is 100% local - no data leaves your machine
+
+---
 
 ## Features
 
