@@ -320,14 +320,12 @@ struct CircularGauge: View {
                 )
                 .rotationEffect(.degrees(-90))
                 .shadow(color: color.opacity(0.6), radius: 6)
-                .animation(.easeInOut(duration: 0.6), value: animatedValue)
 
             if showValue {
                 VStack(spacing: 2) {
                     Text(String(format: "%.0f", animatedValue))
                         .font(.system(size: size > 60 ? 24 : 16, weight: .bold, design: .rounded))
                         .foregroundColor(ModernColors.textPrimary)
-                        .animation(.easeInOut(duration: 0.6), value: animatedValue)
 
                     if let label = label {
                         Text(label)
@@ -339,10 +337,12 @@ struct CircularGauge: View {
         }
         .frame(width: size, height: size)
         .onAppear {
-            animatedValue = value
+            withAnimation(.spring(response: 1.2, dampingFraction: 0.8)) {
+                animatedValue = value
+            }
         }
         .onChange(of: value) { newValue in
-            withAnimation(.easeInOut(duration: 0.6)) {
+            withAnimation(.spring(response: 1.2, dampingFraction: 0.8)) {
                 animatedValue = newValue
             }
         }
@@ -366,14 +366,15 @@ struct MiniGauge: View {
                 .stroke(color, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                 .rotationEffect(.degrees(-90))
                 .shadow(color: color.opacity(0.5), radius: 3)
-                .animation(.easeInOut(duration: 0.6), value: animatedValue)
         }
         .frame(width: 40, height: 40)
         .onAppear {
-            animatedValue = value
+            withAnimation(.spring(response: 1.2, dampingFraction: 0.8)) {
+                animatedValue = value
+            }
         }
         .onChange(of: value) { newValue in
-            withAnimation(.easeInOut(duration: 0.6)) {
+            withAnimation(.spring(response: 1.2, dampingFraction: 0.8)) {
                 animatedValue = newValue
             }
         }

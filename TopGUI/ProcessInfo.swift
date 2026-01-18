@@ -92,6 +92,9 @@ struct SystemStats {
     var cpuTemperature: Double = 0.0 // Celsius
     var cpuFrequency: Double = 0.0   // GHz
 
+    // GPU usage (0-100%)
+    var gpuUsage: Double = 0.0
+
     // Memory pressure details from vm_stat
     var memPagesActive: String = ""
     var memPagesInactive: String = ""

@@ -90,7 +90,7 @@ struct CardDetailView: View {
 
     private var cardTitle: String {
         switch cardType {
-        case .cpu: return "CPU Usage Details"
+        case .cpu: return "CPU & GPU Usage Details"
         case .memory: return "Memory Details"
         case .loadAverages: return "Load Averages"
         case .topCPU: return "Top CPU Processes"
@@ -108,7 +108,7 @@ struct CardDetailView: View {
 
     private var cardSubtitle: String {
         switch cardType {
-        case .cpu: return "Real-time CPU statistics"
+        case .cpu: return "Real-time CPU and GPU statistics"
         case .memory: return "Physical memory breakdown"
         case .loadAverages: return "System load over time"
         case .topCPU: return "Most CPU-intensive processes"
@@ -124,33 +124,76 @@ struct CardDetailView: View {
         }
     }
 
-    // MARK: - CPU Detail View
+    // MARK: - CPU & GPU Detail View
     private var cpuDetailView: some View {
         VStack(spacing: 16) {
-            HStack(spacing: 20) {
-                CircularGauge(
-                    value: dataManager.systemStats.totalCPU,
-                    color: ModernColors.heatColor(percentage: dataManager.systemStats.totalCPU),
-                    size: 150,
-                    lineWidth: 15,
-                    showValue: true,
-                    label: "total"
-                )
+            // CPU and GPU Gauges Side by Side
+            HStack(spacing: 30) {
+                // CPU Gauge
+                VStack(spacing: 12) {
+                    CircularGauge(
+                        value: dataManager.systemStats.totalCPU,
+                        color: ModernColors.heatColor(percentage: dataManager.systemStats.totalCPU),
+                        size: 150,
+                        lineWidth: 15,
+                        showValue: true,
+                        label: "CPU"
+                    )
 
-                VStack(alignment: .leading, spacing: 12) {
-                    detailRow(label: "User CPU", value: String(format: "%.0f%%", dataManager.systemStats.cpuUser), color: ModernColors.cyan)
-                    detailRow(label: "System CPU", value: String(format: "%.0f%%", dataManager.systemStats.cpuSystem), color: ModernColors.purple)
-                    detailRow(label: "Idle", value: String(format: "%.0f%%", dataManager.systemStats.cpuIdle), color: ModernColors.statusLow)
-                    detailRow(label: "Total Cores", value: "\(dataManager.systemStats.cpuCores)", color: ModernColors.textSecondary)
+                    Text("Central Processing Unit")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundColor(ModernColors.textSecondary)
+                }
+
+                // GPU Gauge
+                VStack(spacing: 12) {
+                    CircularGauge(
+                        value: dataManager.systemStats.gpuUsage,
+                        color: ModernColors.heatColor(percentage: dataManager.systemStats.gpuUsage),
+                        size: 150,
+                        lineWidth: 15,
+                        showValue: true,
+                        label: "GPU"
+                    )
+
+                    Text("Graphics Processing Unit")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundColor(ModernColors.textSecondary)
                 }
             }
             .glassCard()
 
+            // CPU Details
             VStack(alignment: .leading, spacing: 12) {
-                Text("About CPU Usage")
+                Text("CPU Breakdown")
                     .modernHeader(size: .small)
 
-                Text("User CPU represents time spent executing user applications. System CPU represents time spent in the kernel. Lower is better for idle systems.")
+                detailRow(label: "User CPU", value: String(format: "%.1f%%", dataManager.systemStats.cpuUser), color: ModernColors.cyan)
+                detailRow(label: "System CPU", value: String(format: "%.1f%%", dataManager.systemStats.cpuSystem), color: ModernColors.purple)
+                detailRow(label: "Idle", value: String(format: "%.1f%%", dataManager.systemStats.cpuIdle), color: ModernColors.statusLow)
+                detailRow(label: "Total Cores", value: "\(dataManager.systemStats.cpuCores)", color: ModernColors.textSecondary)
+            }
+            .glassCard()
+
+            // GPU Details
+            VStack(alignment: .leading, spacing: 12) {
+                Text("GPU Usage")
+                    .modernHeader(size: .small)
+
+                detailRow(label: "GPU Utilization", value: String(format: "%.1f%%", dataManager.systemStats.gpuUsage), color: ModernColors.heatColor(percentage: dataManager.systemStats.gpuUsage))
+
+                Text("GPU usage is measured from IOAccelerator performance statistics. High GPU usage occurs during graphics-intensive tasks like video playback, gaming, or 3D rendering.")
+                    .font(.system(size: 13, design: .rounded))
+                    .foregroundColor(ModernColors.textSecondary)
+                    .padding(.top, 4)
+            }
+            .glassCard()
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text("About CPU & GPU")
+                    .modernHeader(size: .small)
+
+                Text("User CPU represents time spent executing user applications. System CPU represents time spent in the kernel. GPU handles graphics rendering, video decoding, and parallel computations.")
                     .font(.system(size: 13, design: .rounded))
                     .foregroundColor(ModernColors.textSecondary)
             }

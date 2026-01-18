@@ -163,7 +163,7 @@ struct ContentView: View {
         )
     }
 
-    // MARK: - CPU Card
+    // MARK: - CPU Card (with GPU)
     private var cpuCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -171,41 +171,72 @@ struct ContentView: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(ModernColors.cyan)
 
-                Text("CPU")
+                Text("CPU & GPU")
                     .modernHeader(size: .medium)
 
                 Spacer()
-
-                Text(String(format: "%.0f%%", dataManager.systemStats.totalCPU))
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundColor(ModernColors.heatColor(percentage: dataManager.systemStats.totalCPU))
             }
 
-            // Circular progress
-            ZStack {
-                Circle()
-                    .stroke(Color.white.opacity(0.1), lineWidth: 10)
+            // Two circular dials: CPU and GPU side by side
+            HStack(spacing: 20) {
+                // CPU Dial
+                VStack(spacing: 4) {
+                    ZStack {
+                        Circle()
+                            .stroke(Color.white.opacity(0.1), lineWidth: 8)
 
-                Circle()
-                    .trim(from: 0, to: min(dataManager.systemStats.totalCPU / 100.0, 1.0))
-                    .stroke(
-                        ModernColors.heatColor(percentage: dataManager.systemStats.totalCPU),
-                        style: StrokeStyle(lineWidth: 10, lineCap: .round)
-                    )
-                    .rotationEffect(.degrees(-90))
-                    .shadow(color: ModernColors.heatColor(percentage: dataManager.systemStats.totalCPU).opacity(0.6), radius: 8)
+                        Circle()
+                            .trim(from: 0, to: min(dataManager.systemStats.totalCPU / 100.0, 1.0))
+                            .stroke(
+                                ModernColors.heatColor(percentage: dataManager.systemStats.totalCPU),
+                                style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(-90))
+                            .shadow(color: ModernColors.heatColor(percentage: dataManager.systemStats.totalCPU).opacity(0.6), radius: 6)
 
-                VStack(spacing: 2) {
-                    Text(String(format: "%.0f", dataManager.systemStats.totalCPU))
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
-                        .foregroundColor(ModernColors.textPrimary)
+                        VStack(spacing: 2) {
+                            Text(String(format: "%.0f", dataManager.systemStats.totalCPU))
+                                .font(.system(size: 22, weight: .bold, design: .rounded))
+                                .foregroundColor(ModernColors.textPrimary)
 
-                    Text("percent")
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
-                        .foregroundColor(ModernColors.textSecondary)
+                            Text("CPU")
+                                .font(.system(size: 9, weight: .medium, design: .rounded))
+                                .foregroundColor(ModernColors.textSecondary)
+                        }
+                    }
+                    .frame(width: 80, height: 80)
                 }
+
+                // GPU Dial
+                VStack(spacing: 4) {
+                    ZStack {
+                        Circle()
+                            .stroke(Color.white.opacity(0.1), lineWidth: 8)
+
+                        Circle()
+                            .trim(from: 0, to: min(dataManager.systemStats.gpuUsage / 100.0, 1.0))
+                            .stroke(
+                                ModernColors.heatColor(percentage: dataManager.systemStats.gpuUsage),
+                                style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(-90))
+                            .shadow(color: ModernColors.heatColor(percentage: dataManager.systemStats.gpuUsage).opacity(0.6), radius: 6)
+
+                        VStack(spacing: 2) {
+                            Text(String(format: "%.0f", dataManager.systemStats.gpuUsage))
+                                .font(.system(size: 22, weight: .bold, design: .rounded))
+                                .foregroundColor(ModernColors.textPrimary)
+
+                            Text("GPU")
+                                .font(.system(size: 9, weight: .medium, design: .rounded))
+                                .foregroundColor(ModernColors.textSecondary)
+                        }
+                    }
+                    .frame(width: 80, height: 80)
+                }
+
+                Spacer()
             }
-            .frame(height: 100)
 
             Divider().background(Color.white.opacity(0.1))
 

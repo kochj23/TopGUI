@@ -69,6 +69,7 @@ class TopDataManager: ObservableObject {
             self.fetchVMStat()
             self.fetchNetworkStats()
             self.fetchSwapUsage()
+            self.fetchGPUUsage()
 
             // Only fetch disk usage every 5 minutes (300 seconds)
             if self.updateCounter % 300 == 0 {
@@ -83,6 +84,7 @@ class TopDataManager: ObservableObject {
         fetchIOStat() // Fetch immediately on startup
         fetchNetworkStats()
         fetchSwapUsage()
+        fetchGPUUsage()
     }
 
     func stopMonitoring() {
@@ -700,6 +702,117 @@ class TopDataManager: ObservableObject {
 
         DispatchQueue.main.async {
             self.systemStats = stats
+        }
+    }
+
+    // MARK: - GPU Usage (using ioreg for Apple Silicon, or simulated data)
+    private func fetchGPUUsage() {
+        // For Apple Silicon Macs, try to get GPU info from IORegistry
+        // For Intel Macs with discrete GPUs, use ioreg as well
+        let process = Process()
+        let pipe = Pipe()
+
+        process.executableURL = URL(fileURLWithPath: "/usr/sbin/ioreg")
+        process.arguments = ["-r", "-d", "1", "-w", "0", "-c", "IOAccelerator"]
+        process.standardOutput = pipe
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let output = String(data: data, encoding: .utf8) {
+                // Check if we got valid GPU info
+                if output.contains("IOAccelerator") || output.contains("AGXAccelerator") {
+                    parseGPUUsageIOReg(output)
+                } else {
+                    // No GPU found, try alternative method
+                    estimateGPUUsage()
+                }
+            } else {
+                estimateGPUUsage()
+            }
+        } catch {
+            // If ioreg fails, estimate based on system load
+            estimateGPUUsage()
+        }
+    }
+
+    private func parseGPUUsageIOReg(_ output: String) {
+        // Parse ioreg output for GPU info from PerformanceStatistics
+        var gpuUsage: Double = 0.0
+
+        // Look for "Device Utilization %" in PerformanceStatistics
+        // Format: "Device Utilization %"=77
+        if output.contains("PerformanceStatistics") {
+            // Pattern to match: "Device Utilization %"=NUMBER or "Renderer Utilization %"=NUMBER
+            let patterns = [
+                "\"Device Utilization %\"=([0-9]+\\.?[0-9]*)",
+                "\"Renderer Utilization %\"=([0-9]+\\.?[0-9]*)",
+                "\"Tiler Utilization %\"=([0-9]+\\.?[0-9]*)"
+            ]
+
+            for pattern in patterns {
+                if let regex = try? NSRegularExpression(pattern: pattern),
+                   let match = regex.firstMatch(in: output, range: NSRange(output.startIndex..., in: output)),
+                   let range = Range(match.range(at: 1), in: output) {
+                    if let value = Double(output[range]) {
+                        gpuUsage = max(gpuUsage, value) // Take the highest utilization metric
+                    }
+                }
+            }
+        }
+
+        // If we still don't have GPU data, try the estimation method
+        if gpuUsage == 0.0 {
+            estimateGPUUsage()
+            return
+        }
+
+        DispatchQueue.main.async {
+            self.systemStats.gpuUsage = gpuUsage
+        }
+    }
+
+    private func estimateGPUUsage() {
+        // Fallback: Estimate GPU usage based on system metrics
+        // This is a rough approximation since we can't access real GPU metrics without sudo
+
+        // Strategy: Look at GPU-intensive processes (WindowServer, kernel_task, GPU-heavy apps)
+        // and estimate based on their CPU usage and known GPU usage patterns
+
+        var estimatedGPU: Double = 0.0
+
+        // Check for WindowServer (macOS window compositor - always uses GPU)
+        let windowServerProcess = self.processes.first { $0.command.contains("WindowServer") }
+        if let ws = windowServerProcess {
+            // WindowServer CPU usage often correlates with GPU usage
+            // Rough estimate: GPU = WindowServer CPU * 1.5 (since GPU does most rendering)
+            estimatedGPU += ws.cpuUsage * 1.5
+        }
+
+        // Check for other GPU-intensive processes
+        let gpuIntensiveApps = self.processes.filter {
+            $0.command.contains("Safari") ||
+            $0.command.contains("Chrome") ||
+            $0.command.contains("Final Cut") ||
+            $0.command.contains("Compressor") ||
+            $0.command.contains("Motion") ||
+            $0.command.contains("Unity") ||
+            $0.command.contains("Unreal") ||
+            $0.command.contains("Blender")
+        }
+
+        for process in gpuIntensiveApps {
+            // Add 30% of their CPU usage as estimated GPU contribution
+            estimatedGPU += process.cpuUsage * 0.3
+        }
+
+        // Cap at 100%
+        estimatedGPU = min(estimatedGPU, 100.0)
+
+        DispatchQueue.main.async {
+            self.systemStats.gpuUsage = estimatedGPU
         }
     }
 }
