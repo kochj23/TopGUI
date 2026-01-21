@@ -22,6 +22,21 @@ struct AIInsightsView: View {
         case insights, anomalies, optimize, qa
     }
 
+    private var isCurrentBackendAvailable: Bool {
+        switch AIBackendManager.shared.activeBackend {
+        case .ollama:
+            return AIBackendManager.shared.isOllamaAvailable
+        case .mlx:
+            return AIBackendManager.shared.isMLXAvailable
+        case .tinyLLM:
+            return AIBackendManager.shared.isTinyLLMAvailable
+        case .tinyChat:
+            return AIBackendManager.shared.isTinyChatAvailable
+        case .openWebUI:
+            return AIBackendManager.shared.isOpenWebUIAvailable
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             // Header
@@ -36,15 +51,155 @@ struct AIInsightsView: View {
 
                 Spacer()
 
-                // Backend status
-                HStack(spacing: 8) {
-                    Circle()
-                        .fill(AIBackendManager.shared.isOllamaAvailable ? Color.green : Color.red)
-                        .frame(width: 8, height: 8)
+                // Backend and Model Selection
+                HStack(spacing: 12) {
+                    // Backend Selector
+                    Menu {
+                        Button {
+                            AIBackendManager.shared.activeBackend = .ollama
+                            AIBackendManager.shared.saveConfiguration()
+                        } label: {
+                            HStack {
+                                Image(systemName: "brain.head.profile")
+                                Text("Ollama")
+                                if AIBackendManager.shared.activeBackend == .ollama {
+                                    Image(systemName: "checkmark")
+                                }
+                                Spacer()
+                                Text(AIBackendManager.shared.isOllamaAvailable ? "Available" : "Unavailable")
+                                    .font(.caption)
+                                    .foregroundColor(AIBackendManager.shared.isOllamaAvailable ? .green : .red)
+                            }
+                        }
+                        .disabled(!AIBackendManager.shared.isOllamaAvailable)
 
-                    Text(AIBackendManager.shared.activeBackend.rawValue)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        Button {
+                            AIBackendManager.shared.activeBackend = .mlx
+                            AIBackendManager.shared.saveConfiguration()
+                        } label: {
+                            HStack {
+                                Image(systemName: "cpu")
+                                Text("MLX Toolkit")
+                                if AIBackendManager.shared.activeBackend == .mlx {
+                                    Image(systemName: "checkmark")
+                                }
+                                Spacer()
+                                Text(AIBackendManager.shared.isMLXAvailable ? "Available" : "Unavailable")
+                                    .font(.caption)
+                                    .foregroundColor(AIBackendManager.shared.isMLXAvailable ? .green : .red)
+                            }
+                        }
+                        .disabled(!AIBackendManager.shared.isMLXAvailable)
+
+                        Button {
+                            AIBackendManager.shared.activeBackend = .tinyLLM
+                            AIBackendManager.shared.saveConfiguration()
+                        } label: {
+                            HStack {
+                                Image(systemName: "bolt.fill")
+                                Text("TinyLLM")
+                                if AIBackendManager.shared.activeBackend == .tinyLLM {
+                                    Image(systemName: "checkmark")
+                                }
+                                Spacer()
+                                Text(AIBackendManager.shared.isTinyLLMAvailable ? "Available" : "Unavailable")
+                                    .font(.caption)
+                                    .foregroundColor(AIBackendManager.shared.isTinyLLMAvailable ? .green : .red)
+                            }
+                        }
+                        .disabled(!AIBackendManager.shared.isTinyLLMAvailable)
+
+                        Button {
+                            AIBackendManager.shared.activeBackend = .tinyChat
+                            AIBackendManager.shared.saveConfiguration()
+                        } label: {
+                            HStack {
+                                Image(systemName: "message.fill")
+                                Text("TinyChat")
+                                if AIBackendManager.shared.activeBackend == .tinyChat {
+                                    Image(systemName: "checkmark")
+                                }
+                                Spacer()
+                                Text(AIBackendManager.shared.isTinyChatAvailable ? "Available" : "Unavailable")
+                                    .font(.caption)
+                                    .foregroundColor(AIBackendManager.shared.isTinyChatAvailable ? .green : .red)
+                            }
+                        }
+                        .disabled(!AIBackendManager.shared.isTinyChatAvailable)
+
+                        Button {
+                            AIBackendManager.shared.activeBackend = .openWebUI
+                            AIBackendManager.shared.saveConfiguration()
+                        } label: {
+                            HStack {
+                                Image(systemName: "globe")
+                                Text("OpenWebUI")
+                                if AIBackendManager.shared.activeBackend == .openWebUI {
+                                    Image(systemName: "checkmark")
+                                }
+                                Spacer()
+                                Text(AIBackendManager.shared.isOpenWebUIAvailable ? "Available" : "Unavailable")
+                                    .font(.caption)
+                                    .foregroundColor(AIBackendManager.shared.isOpenWebUIAvailable ? .green : .red)
+                            }
+                        }
+                        .disabled(!AIBackendManager.shared.isOpenWebUIAvailable)
+                    } label: {
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(isCurrentBackendAvailable ? Color.green : Color.red)
+                                .frame(width: 8, height: 8)
+
+                            Text(AIBackendManager.shared.activeBackend.rawValue)
+                                .font(.system(size: 13, weight: .medium))
+
+                            Image(systemName: "chevron.down")
+                                .font(.caption)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.gray.opacity(0.2))
+                        )
+                    }
+                    .frame(minWidth: 150)
+
+                    // Model selector (only show if Ollama is available)
+                    if AIBackendManager.shared.isOllamaAvailable && !AIBackendManager.shared.ollamaModels.isEmpty {
+                        Menu {
+                            ForEach(AIBackendManager.shared.ollamaModels, id: \.self) { model in
+                                Button {
+                                    AIBackendManager.shared.selectedOllamaModel = model
+                                    AIBackendManager.shared.saveConfiguration()
+                                } label: {
+                                    HStack {
+                                        Text(model)
+                                        if model == AIBackendManager.shared.selectedOllamaModel {
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "brain.head.profile")
+                                Text(AIBackendManager.shared.selectedOllamaModel)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                Image(systemName: "chevron.down")
+                                    .font(.caption)
+                            }
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .fill(Color.blue.opacity(0.2))
+                            )
+                        }
+                        .frame(maxWidth: 200)
+                    }
 
                     Button {
                         showingBackendSettings = true
