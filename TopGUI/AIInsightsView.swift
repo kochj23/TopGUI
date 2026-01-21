@@ -278,13 +278,34 @@ struct AIInsightsView: View {
                 .bold()
 
             if aiAnalyzer.isAnalyzing {
-                HStack {
+                VStack(spacing: 16) {
                     ProgressView()
-                        .scaleEffect(0.8)
-                    Text("Analyzing system performance with AI...")
-                        .foregroundColor(.secondary)
+                        .scaleEffect(1.5)
+                        .progressViewStyle(.circular)
+
+                    VStack(spacing: 8) {
+                        Text("AI is analyzing your system...")
+                            .font(.headline)
+
+                        Text("This may take up to 2 minutes")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+
+                        Text("Using: \(AIBackendManager.shared.selectedOllamaModel)")
+                            .font(.caption)
+                            .foregroundColor(.cyan)
+                    }
                 }
-                .padding()
+                .frame(maxWidth: .infinity)
+                .padding(40)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.cyan.opacity(0.1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.cyan.opacity(0.3), lineWidth: 2)
+                        )
+                )
             } else if !aiAnalyzer.performanceInsights.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
                     Text(aiAnalyzer.performanceInsights)
@@ -352,7 +373,32 @@ struct AIInsightsView: View {
                 .font(.title2)
                 .bold()
 
-            if aiAnalyzer.detectedAnomalies.isEmpty {
+            if aiAnalyzer.isAnalyzing {
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .scaleEffect(1.5)
+                        .progressViewStyle(.circular)
+
+                    VStack(spacing: 8) {
+                        Text("AI is scanning for anomalies...")
+                            .font(.headline)
+
+                        Text("This may take up to 2 minutes")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(40)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.orange.opacity(0.1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.orange.opacity(0.3), lineWidth: 2)
+                        )
+                )
+            } else if aiAnalyzer.detectedAnomalies.isEmpty {
                 VStack(spacing: 12) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 48))
@@ -396,7 +442,32 @@ struct AIInsightsView: View {
                 .font(.title2)
                 .bold()
 
-            if aiAnalyzer.optimizationAdvice.isEmpty {
+            if aiAnalyzer.isAnalyzing {
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .scaleEffect(1.5)
+                        .progressViewStyle(.circular)
+
+                    VStack(spacing: 8) {
+                        Text("AI is generating recommendations...")
+                            .font(.headline)
+
+                        Text("This may take up to 2 minutes")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(40)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.green.opacity(0.1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.green.opacity(0.3), lineWidth: 2)
+                        )
+                )
+            } else if aiAnalyzer.optimizationAdvice.isEmpty {
                 Text("Run analysis to get AI-powered optimization recommendations")
                     .foregroundColor(.secondary)
                     .padding()
@@ -489,8 +560,41 @@ struct AIInsightsView: View {
                 .disabled(userQuestion.isEmpty || isProcessingQuestion)
             }
 
+            // Processing indicator
+            if isProcessingQuestion {
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .scaleEffect(1.5)
+                        .progressViewStyle(.circular)
+
+                    VStack(spacing: 8) {
+                        Text("AI is thinking...")
+                            .font(.headline)
+
+                        Text("This may take up to 2 minutes")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+
+                        Text("Question: \(userQuestion)")
+                            .font(.caption)
+                            .foregroundColor(.cyan)
+                            .lineLimit(2)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(40)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.purple.opacity(0.1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.purple.opacity(0.3), lineWidth: 2)
+                        )
+                )
+            }
+
             // Response
-            if !qaResponse.isEmpty {
+            if !qaResponse.isEmpty && !isProcessingQuestion {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Image(systemName: "brain.head.profile")
