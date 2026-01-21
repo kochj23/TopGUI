@@ -46,6 +46,29 @@ struct TopGUIApp: App {
                 .keyboardShortcut("e", modifiers: [.command])
                 .disabled(true)
             }
+
+            CommandMenu("AI") {
+                Button("Show AI Insights...") {
+                    // Trigger AI Insights sheet
+                    NotificationCenter.default.post(name: .showAIInsights, object: nil)
+                }
+                .keyboardShortcut("i", modifiers: [.command])
+
+                Divider()
+
+                Button("AI Backend Settings...") {
+                    NotificationCenter.default.post(name: .showAIBackendSettings, object: nil)
+                }
+                .keyboardShortcut("b", modifiers: [.command, .shift])
+
+                Divider()
+
+                Button("Refresh AI Backends") {
+                    Task {
+                        await AIBackendManager.shared.refreshAllBackends()
+                    }
+                }
+            }
         }
     }
 }

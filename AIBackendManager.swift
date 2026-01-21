@@ -450,7 +450,7 @@ struct AIBackendSelectionView: View {
                                     Text(model).tag(model)
                                 }
                             }
-                            .onChange(of: manager.selectedOllamaModel) { _, _ in
+                            .onChange(of: manager.selectedOllamaModel) { _ in
                                 manager.saveConfiguration()
                             }
                         }

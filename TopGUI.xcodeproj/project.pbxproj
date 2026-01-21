@@ -13,7 +13,12 @@
 		5A5A8F53A2374EEE3B1F8F60 /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF1726F3486B5DE7B088EAE /* CardDetailView.swift */; };
 		6B9BC5B47A588299A34F91B7 /* ModernDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1709BC378945C536D803B62C /* ModernDesign.swift */; };
 		8FCC6E63BDEF54D448BE4A38 /* ProcessDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2C7C51FA1146AC7FCE1655 /* ProcessDetailView.swift */; };
+		AA33EB0AB5B16CDF56BF8214 /* AIBackendManager+Generation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86C5656EF361FC7C6C8F02AF /* AIBackendManager+Generation.swift */; };
+		AA7FC23D293064C582C26354 /* AISystemAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4730A655810892091D896852 /* AISystemAnalyzer.swift */; };
 		ACFA9751F5CC238A767622DB /* ProcessInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9754DBFCF9EF6DED34A33716 /* ProcessInfo.swift */; };
+		AE6EAA3FD8C2FF5193664D03 /* AIInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD0E7A879B8D39397B5837D /* AIInsightsView.swift */; };
+		D331F13FCE00BA14B8FEBFA7 /* AIBackendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D2F68BFBB1B32A9652AAB3 /* AIBackendManager.swift */; };
+		D79FB949477AA678EC5F81DB /* NotificationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9ED047097132066D0E02C9 /* NotificationNames.swift */; };
 		F3E8895537AB6C8A3CCB9B83 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 349C32F1ABFDAD4C2B8E6ABF /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -21,14 +26,19 @@
 		1709BC378945C536D803B62C /* ModernDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernDesign.swift; sourceTree = "<group>"; };
 		3458132509D7F39037749887 /* TopGUI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TopGUI.entitlements; sourceTree = "<group>"; };
 		349C32F1ABFDAD4C2B8E6ABF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4730A655810892091D896852 /* AISystemAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AISystemAnalyzer.swift; sourceTree = "<group>"; };
 		4E42668CF54558EA729CED63 /* TopGUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TopGUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6406212058129268FD61B022 /* TopGUIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopGUIApp.swift; sourceTree = "<group>"; };
 		6B2C7C51FA1146AC7FCE1655 /* ProcessDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessDetailView.swift; sourceTree = "<group>"; };
 		81E203F665BEA9624788856F /* TopDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopDataManager.swift; sourceTree = "<group>"; };
+		86C5656EF361FC7C6C8F02AF /* AIBackendManager+Generation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "AIBackendManager+Generation.swift"; sourceTree = "<group>"; };
 		9754DBFCF9EF6DED34A33716 /* ProcessInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessInfo.swift; sourceTree = "<group>"; };
 		AE26106E74BD0959BA4C7734 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		CFF1726F3486B5DE7B088EAE /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailView.swift; sourceTree = "<group>"; };
+		DDD0E7A879B8D39397B5837D /* AIInsightsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AIInsightsView.swift; path = TopGUI/AIInsightsView.swift; sourceTree = "<group>"; };
 		E996840DD5163D17FBAFB2AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		F3D2F68BFBB1B32A9652AAB3 /* AIBackendManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIBackendManager.swift; sourceTree = "<group>"; };
+		FA9ED047097132066D0E02C9 /* NotificationNames.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NotificationNames.swift; path = TopGUI/NotificationNames.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -54,6 +64,11 @@
 			children = (
 				222784164CAF692D0EB6BB4B /* TopGUI */,
 				F1567067F95E64A07ED53973 /* Products */,
+				DDD0E7A879B8D39397B5837D /* AIInsightsView.swift */,
+				FA9ED047097132066D0E02C9 /* NotificationNames.swift */,
+				86C5656EF361FC7C6C8F02AF /* AIBackendManager+Generation.swift */,
+				F3D2F68BFBB1B32A9652AAB3 /* AIBackendManager.swift */,
+				4730A655810892091D896852 /* AISystemAnalyzer.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -80,8 +95,6 @@
 			dependencies = (
 			);
 			name = TopGUI;
-			packageProductDependencies = (
-			);
 			productName = TopGUI;
 			productReference = 4E42668CF54558EA729CED63 /* TopGUI.app */;
 			productType = "com.apple.product-type.application";
@@ -106,6 +119,7 @@
 			mainGroup = 22BC4EF77B613C7B0F535E71;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
+			productRefGroup = F1567067F95E64A07ED53973 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -137,6 +151,11 @@
 				ACFA9751F5CC238A767622DB /* ProcessInfo.swift in Sources */,
 				403AD43E1E0932100B60E555 /* TopDataManager.swift in Sources */,
 				26251AC086FA68213A258B98 /* TopGUIApp.swift in Sources */,
+				AE6EAA3FD8C2FF5193664D03 /* AIInsightsView.swift in Sources */,
+				D79FB949477AA678EC5F81DB /* NotificationNames.swift in Sources */,
+				AA33EB0AB5B16CDF56BF8214 /* AIBackendManager+Generation.swift in Sources */,
+				D331F13FCE00BA14B8FEBFA7 /* AIBackendManager.swift in Sources */,
+				AA7FC23D293064C582C26354 /* AISystemAnalyzer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,7 +224,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TopGUI/TopGUI.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 12;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = TopGUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -290,7 +309,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TopGUI/TopGUI.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 12;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = TopGUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

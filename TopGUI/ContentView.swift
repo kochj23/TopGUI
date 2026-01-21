@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var sortColumn: SortColumn = .cpu
     @State private var sortAscending = false
+    @State private var showingAIInsights = false
 
     enum CardType: Identifiable {
         case cpu, memory, loadAverages, topCPU, topMemory, swap, states, memoryPressure, cpuInfo, perCore, diskActivity, networkBandwidth, systemHealth
@@ -99,6 +100,13 @@ struct ContentView: View {
             CardDetailView(cardType: cardType)
                 .environmentObject(dataManager)
         }
+        .sheet(isPresented: $showingAIInsights) {
+            AIInsightsView()
+                .environmentObject(dataManager)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .showAIInsights)) { _ in
+            showingAIInsights = true
+        }
     }
 
     // MARK: - Header
@@ -135,6 +143,26 @@ struct ContentView: View {
                     .fill(dataManager.isRunning ? ModernColors.statusLow : ModernColors.statusCritical)
                     .frame(width: 10, height: 10)
                     .shadow(color: dataManager.isRunning ? ModernColors.statusLow : ModernColors.statusCritical, radius: 5)
+
+                // AI Insights Button
+                Button {
+                    showingAIInsights = true
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "brain.head.profile")
+                            .font(.system(size: 14))
+                        Text("AI Insights")
+                            .font(.system(size: 13, weight: .semibold))
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.cyan.opacity(0.2))
+                    )
+                    .foregroundColor(.cyan)
+                }
+                .buttonStyle(.plain)
             }
         }
     }

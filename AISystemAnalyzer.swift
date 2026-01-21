@@ -39,7 +39,7 @@ class AISystemAnalyzer: ObservableObject {
         diskUsage: [(name: String, used: Double, total: Double)],
         networkStats: (download: Double, upload: Double)
     ) async -> String {
-        guard aiBackend.activeBackend != nil else {
+        guard aiBackend.isOllamaAvailable || aiBackend.isTinyLLMAvailable || aiBackend.isTinyChatAvailable || aiBackend.isOpenWebUIAvailable else {
             return generateBasicInsights(cpu: cpuUsage, memory: memoryUsage, pressure: memoryPressure)
         }
 
@@ -141,7 +141,7 @@ class AISystemAnalyzer: ObservableObject {
 
     /// Detect unusual system patterns
     func detectAnomalies(currentData: SystemSnapshot, baseline: SystemBaseline?) async -> [SystemAnomaly] {
-        guard aiBackend.activeBackend != nil else {
+        guard aiBackend.isOllamaAvailable || aiBackend.isTinyLLMAvailable || aiBackend.isTinyChatAvailable || aiBackend.isOpenWebUIAvailable else {
             return detectBasicAnomalies(currentData: currentData, baseline: baseline)
         }
 
@@ -264,9 +264,11 @@ class AISystemAnalyzer: ObservableObject {
     // MARK: - Feature 3: AI Optimization Advice
 
     /// Generate optimization recommendations
-    func generateOptimizationAdvice(systemData: SystemSnapshot, processes: [(String, Double, Double)]) async -> [OptimizationAdvice] {
-        guard aiBackend.activeBackend != nil else {
-            return generateBasicAdvice(systemData: systemData, processes: processes)
+    func generateOptimizationAdvice(currentData: SystemSnapshot) async -> [OptimizationAdvice] {
+        let processes = currentData.topProcesses
+
+        guard aiBackend.isOllamaAvailable || aiBackend.isTinyLLMAvailable || aiBackend.isTinyChatAvailable || aiBackend.isOpenWebUIAvailable else {
+            return generateBasicAdvice(systemData: currentData, processes: processes)
         }
 
         isAnalyzing = true
@@ -274,9 +276,9 @@ class AISystemAnalyzer: ObservableObject {
 
         let context = """
         System Status:
-        - CPU: \(String(format: "%.1f", systemData.cpuUsage))%
-        - Memory: \(String(format: "%.1f", systemData.memoryUsage))%
-        - Load: \(String(format: "%.2f", systemData.loadAverage))
+        - CPU: \(String(format: "%.1f", currentData.cpuUsage))%
+        - Memory: \(String(format: "%.1f", currentData.memoryUsage))%
+        - Load: \(String(format: "%.2f", currentData.loadAverage))
 
         Top Processes:
         \(processes.prefix(10).map { "\($0.0): CPU \(String(format: "%.1f", $0.1))%, Memory \(String(format: "%.1f", $0.2))%" }.joined(separator: "\n"))
@@ -297,7 +299,8 @@ class AISystemAnalyzer: ObservableObject {
                     "description": "What to do",
                     "impact": "low|medium|high",
                     "difficulty": "easy|medium|hard",
-                    "reason": "Why this helps"
+                    "reason": "Why this helps",
+                    "action": "Step-by-step instructions"
                 }
             ]
         }
@@ -321,7 +324,7 @@ class AISystemAnalyzer: ObservableObject {
             lastError = error.localizedDescription
         }
 
-        return generateBasicAdvice(systemData: systemData, processes: processes)
+        return generateBasicAdvice(systemData: currentData, processes: processes)
     }
 
     private func generateBasicAdvice(systemData: SystemSnapshot, processes: [(String, Double, Double)]) -> [OptimizationAdvice] {
@@ -335,7 +338,8 @@ class AISystemAnalyzer: ObservableObject {
                     description: "Close or investigate \(process.0) which is using \(String(format: "%.1f", process.1))% CPU",
                     impact: .high,
                     difficulty: .easy,
-                    reason: "High CPU usage causes slowdowns, heat, and battery drain"
+                    reason: "High CPU usage causes slowdowns, heat, and battery drain",
+                    action: "1. Open Activity Monitor\n2. Find \(process.0)\n3. Select it and click Quit Process"
                 ))
             }
         }
@@ -346,7 +350,8 @@ class AISystemAnalyzer: ObservableObject {
                 description: "Close unused applications to reduce memory pressure",
                 impact: .high,
                 difficulty: .easy,
-                reason: "High memory usage leads to swap usage and system slowdowns"
+                reason: "High memory usage leads to swap usage and system slowdowns",
+                action: "1. Review open applications in Dock\n2. Quit apps you're not using\n3. Restart your Mac if needed"
             ))
         }
 
@@ -356,7 +361,8 @@ class AISystemAnalyzer: ObservableObject {
                 description: "Too many processes competing for resources",
                 impact: .medium,
                 difficulty: .medium,
-                reason: "High load average indicates the system is overloaded"
+                reason: "High load average indicates the system is overloaded",
+                action: "1. Open Activity Monitor\n2. Sort by CPU usage\n3. Quit non-essential high-CPU processes"
             ))
         }
 
@@ -366,7 +372,8 @@ class AISystemAnalyzer: ObservableObject {
                 description: "No major optimization needed - system is performing well",
                 impact: .low,
                 difficulty: .easy,
-                reason: "Current resource usage is within normal parameters"
+                reason: "Current resource usage is within normal parameters",
+                action: "Keep monitoring your system periodically to maintain good performance"
             ))
         }
 
@@ -376,23 +383,13 @@ class AISystemAnalyzer: ObservableObject {
     // MARK: - Feature 4: AI Q&A Interface
 
     /// Answer questions about system performance
-    func askQuestion(_ question: String, systemData: SystemSnapshot, processes: [(String, Double, Double)]) async -> String {
-        guard aiBackend.activeBackend != nil else {
+    func askQuestion(_ question: String, context: String) async -> String {
+        guard aiBackend.isOllamaAvailable || aiBackend.isTinyLLMAvailable || aiBackend.isTinyChatAvailable || aiBackend.isOpenWebUIAvailable else {
             return "AI backend not available. Configure Ollama, TinyLLM (by Jason Cox), or MLX in Settings."
         }
 
         isAnalyzing = true
         defer { isAnalyzing = false }
-
-        let context = buildSystemContext(
-            cpuUsage: systemData.cpuUsage,
-            memoryUsage: systemData.memoryUsage,
-            memoryPressure: systemData.memoryPressure,
-            loadAverages: (systemData.loadAverage, systemData.loadAverage, systemData.loadAverage),
-            topProcesses: processes,
-            diskUsage: [],
-            networkStats: (0, 0)
-        )
 
         let prompt = """
         Answer this question about the Mac's performance:
@@ -459,8 +456,8 @@ class AISystemAnalyzer: ObservableObject {
                 return nil
             }
 
-            let type = AnomalyType(rawValue: typeStr) ?? .process
-            let severity = AnomalySeverity(rawValue: severityStr) ?? .medium
+            let type = SystemAnomaly.AnomalyType(rawValue: typeStr) ?? .process
+            let severity = SystemAnomaly.AnomalySeverity(rawValue: severityStr) ?? .medium
 
             return SystemAnomaly(
                 type: type,
@@ -488,15 +485,17 @@ class AISystemAnalyzer: ObservableObject {
                 return nil
             }
 
-            let impact = ImpactLevel(rawValue: impactStr) ?? .medium
-            let difficulty = DifficultyLevel(rawValue: difficultyStr) ?? .medium
+            let action = dict["action"] as? String ?? ""
+            let impact = OptimizationAdvice.ImpactLevel(rawValue: impactStr) ?? .medium
+            let difficulty = OptimizationAdvice.DifficultyLevel(rawValue: difficultyStr) ?? .medium
 
             return OptimizationAdvice(
                 title: title,
                 description: description,
                 impact: impact,
                 difficulty: difficulty,
-                reason: reason
+                reason: reason,
+                action: action
             )
         }
     }
@@ -520,19 +519,50 @@ class AISystemAnalyzer: ObservableObject {
 struct SystemSnapshot {
     let cpuUsage: Double
     let memoryUsage: Double
+    let memoryTotal: Double
     let memoryPressure: String
-    let loadAverage: Double
-    let topProcess: String
-    let topProcessCPU: Double
+    let loadAverages: (Double, Double, Double)
+    let topProcesses: [(String, Double, Double)]
+    let diskUsage: [(String, Double, Double)]
+    let networkStats: (Double, Double)
     let timestamp: Date
 
+    // Computed properties for backward compatibility with existing code
+    var loadAverage: Double { loadAverages.0 }
+    var topProcess: String { topProcesses.first?.0 ?? "Unknown" }
+    var topProcessCPU: Double { topProcesses.first?.1 ?? 0.0 }
+
+    init(
+        cpuUsage: Double,
+        memoryUsage: Double,
+        memoryTotal: Double,
+        memoryPressure: String,
+        loadAverages: (Double, Double, Double),
+        topProcesses: [(String, Double, Double)],
+        diskUsage: [(String, Double, Double)],
+        networkStats: (Double, Double)
+    ) {
+        self.cpuUsage = cpuUsage
+        self.memoryUsage = memoryUsage
+        self.memoryTotal = memoryTotal
+        self.memoryPressure = memoryPressure
+        self.loadAverages = loadAverages
+        self.topProcesses = topProcesses
+        self.diskUsage = diskUsage
+        self.networkStats = networkStats
+        self.timestamp = Date()
+    }
+
+    // Legacy init for backward compatibility
     init(cpu: Double, memory: Double, pressure: String, load: Double, topProcess: String, topCPU: Double) {
         self.cpuUsage = cpu
         self.memoryUsage = memory
+        self.memoryTotal = 100.0 // Default
         self.memoryPressure = pressure
-        self.loadAverage = load
-        self.topProcess = topProcess
-        self.topProcessCPU = topCPU
+        self.loadAverages = (load, load, load)
+        self.topProcesses = [(topProcess, topCPU, 0.0)]
+        self.diskUsage = []
+        self.networkStats = (0, 0)
         self.timestamp = Date()
     }
 }
@@ -594,6 +624,7 @@ struct OptimizationAdvice: Identifiable {
     let impact: ImpactLevel
     let difficulty: DifficultyLevel
     let reason: String
+    let action: String
 
     enum ImpactLevel: String {
         case low = "low"
