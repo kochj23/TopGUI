@@ -275,3 +275,8 @@ For issues, feature requests, or contributions, please open an issue on GitHub.
 - Minimum macOS: 13.0
 - Architecture: Universal (Apple Silicon & Intel)
 - Distribution: Direct download (GitHub), Homebrew, or SetApp
+
+---
+
+**Last Updated:** January 22, 2026
+**Status:** ✅ Production Ready
