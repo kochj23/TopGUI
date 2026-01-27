@@ -23,7 +23,11 @@ struct AIInsightsView: View {
     }
 
     private var isCurrentBackendAvailable: Bool {
-        switch AIBackendManager.shared.activeBackend {
+        guard let backend = AIBackendManager.shared.activeBackend else {
+            return false
+        }
+
+        switch backend {
         case .ollama:
             return AIBackendManager.shared.isOllamaAvailable
         case .mlx:
@@ -34,6 +38,18 @@ struct AIInsightsView: View {
             return AIBackendManager.shared.isTinyChatAvailable
         case .openWebUI:
             return AIBackendManager.shared.isOpenWebUIAvailable
+        case .openAI:
+            return AIBackendManager.shared.isOpenAIAvailable
+        case .googleCloud:
+            return AIBackendManager.shared.isGoogleCloudAvailable
+        case .azureCognitive:
+            return AIBackendManager.shared.isAzureAvailable
+        case .awsAI:
+            return AIBackendManager.shared.isAWSAvailable
+        case .ibmWatson:
+            return AIBackendManager.shared.isIBMWatsonAvailable
+        case .auto:
+            return false
         }
     }
 
@@ -150,7 +166,7 @@ struct AIInsightsView: View {
                                 .fill(isCurrentBackendAvailable ? Color.green : Color.red)
                                 .frame(width: 8, height: 8)
 
-                            Text(AIBackendManager.shared.activeBackend.rawValue)
+                            Text(AIBackendManager.shared.activeBackend?.rawValue ?? "None")
                                 .font(.system(size: 13, weight: .medium))
 
                             Image(systemName: "chevron.down")
