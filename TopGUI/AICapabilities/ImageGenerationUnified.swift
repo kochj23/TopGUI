@@ -198,7 +198,7 @@ class ImageGenerationUnified: ObservableObject {
 
     private func generateDALLE(prompt: String, size: ImageSize) async throws -> Data {
         // Requires OpenAI API key
-        guard let apiKey = ProcessInfo.processInfo.environment["OPENAI_API_KEY"] else {
+        guard let apiKey = Foundation.ProcessInfo.processInfo.environment["OPENAI_API_KEY"] else {
             throw ImageGenerationError.missingAPIKey
         }
 

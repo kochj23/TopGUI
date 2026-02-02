@@ -23,11 +23,13 @@
 		B99A8B4094CE5C038574E4C5 /* UnifiedAICapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96832B5EE2C98638F8BF6DE1 /* UnifiedAICapabilities.swift */; };
 		D331F13FCE00BA14B8FEBFA7 /* AIBackendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D2F68BFBB1B32A9652AAB3 /* AIBackendManager.swift */; };
 		D79FB949477AA678EC5F81DB /* NotificationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9ED047097132066D0E02C9 /* NotificationNames.swift */; };
+		F359FCC74C228AA25B9BCEED /* DiskThroughputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12044BAEC501D1C1F50A8555 /* DiskThroughputService.swift */; };
 		F3E8895537AB6C8A3CCB9B83 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 349C32F1ABFDAD4C2B8E6ABF /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0FE0A1AF1A6A7DE1E97E121E /* AnalysisUnified.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnalysisUnified.swift; path = AICapabilities/AnalysisUnified.swift; sourceTree = "<group>"; };
+		12044BAEC501D1C1F50A8555 /* DiskThroughputService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiskThroughputService.swift; sourceTree = "<group>"; };
 		1709BC378945C536D803B62C /* ModernDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernDesign.swift; sourceTree = "<group>"; };
 		317048A83680CAF0C8ACB323 /* VoiceUnified.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VoiceUnified.swift; path = AICapabilities/VoiceUnified.swift; sourceTree = "<group>"; };
 		3458132509D7F39037749887 /* TopGUI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TopGUI.entitlements; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 				3458132509D7F39037749887 /* TopGUI.entitlements */,
 				6406212058129268FD61B022 /* TopGUIApp.swift */,
 				0D2C1DE1B1D484E08E55FF78 /* AICapabilities */,
+				12044BAEC501D1C1F50A8555 /* DiskThroughputService.swift */,
 			);
 			path = TopGUI;
 			sourceTree = "<group>";
@@ -180,6 +183,7 @@
 				13B14881B955E2B19B4473FB /* VoiceUnified.swift in Sources */,
 				6F9D825AE4F159DDC8390A67 /* AnalysisUnified.swift in Sources */,
 				261054F9948199CE7F85792E /* SecurityUnified.swift in Sources */,
+				F359FCC74C228AA25B9BCEED /* DiskThroughputService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,7 +252,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TopGUI/TopGUI.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = TopGUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -256,7 +260,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 3.6.0;
+				MARKETING_VERSION = 3.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUI;
 				PRODUCT_NAME = TopGUI;
 				SDKROOT = macosx;
@@ -333,7 +337,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TopGUI/TopGUI.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = TopGUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -341,7 +345,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 3.6.0;
+				MARKETING_VERSION = 3.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUI;
 				PRODUCT_NAME = TopGUI;
 				SDKROOT = macosx;

@@ -20,14 +20,14 @@ struct ContentView: View {
     @State private var showingAIInsights = false
 
     enum CardType: Identifiable {
-        case cpu, memory, loadAverages, topCPU, topMemory, swap, states, memoryPressure, cpuInfo, perCore, diskActivity, networkBandwidth, systemHealth
+        case cpu, memory, loadAverages, diskThroughput, topMemory, swap, states, memoryPressure, cpuInfo, perCore, diskActivity, networkBandwidth, systemHealth
 
         var id: String {
             switch self {
             case .cpu: return "cpu"
             case .memory: return "memory"
             case .loadAverages: return "load"
-            case .topCPU: return "topCPU"
+            case .diskThroughput: return "diskThroughput"
             case .topMemory: return "topMemory"
             case .swap: return "swap"
             case .states: return "states"
@@ -71,7 +71,7 @@ struct ContentView: View {
                         cpuCard
                         memoryCard
                         loadAveragesCard
-                        topCPUProcessesCard
+                        diskThroughputCard
 
                         topMemoryProcessesCard
                         swapUsageCard
@@ -401,57 +401,65 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Top CPU Processes Card
-    private var topCPUProcessesCard: some View {
+    // MARK: - Disk Throughput Card
+    @ObservedObject private var diskThroughput = DiskThroughputService.shared
+
+    private var diskThroughputCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: "flame.fill")
+                Image(systemName: "arrow.up.arrow.down.circle.fill")
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(ModernColors.orange)
 
-                Text("Top CPU")
+                Text("Disk Throughput")
                     .modernHeader(size: .medium)
 
                 Spacer()
+
+                // Activity indicator
+                Circle()
+                    .fill(Color(hex: diskThroughput.activityLevel.color))
+                    .frame(width: 8, height: 8)
+                    .shadow(color: Color(hex: diskThroughput.activityLevel.color).opacity(0.6), radius: 4)
             }
 
-            // Single dial showing % of total CPU capacity used by top 5
-            let top5CPU = dataManager.processes.prefix(5).reduce(0.0) { $0 + $1.cpuUsage }
-            let totalCapacity = Double(dataManager.systemStats.cpuCores) * 100.0
-            let percentOfCapacity = totalCapacity > 0 ? (top5CPU / totalCapacity) * 100.0 : 0
             HStack {
+                // Combined throughput dial
+                let throughputPercent = min(diskThroughput.combinedThroughput / 5.0, 100.0) // Scale: 500 MB/s = 100%
                 CircularGauge(
-                    value: min(percentOfCapacity, 100.0),
+                    value: throughputPercent,
                     color: ModernColors.orange,
                     size: 80,
                     lineWidth: 8,
-                    showValue: true,
-                    label: "capacity"
+                    showValue: false
+                )
+                .overlay(
+                    VStack(spacing: 2) {
+                        Text(diskThroughput.formattedCombinedSpeed)
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundColor(ModernColors.textPrimary)
+                        Text("total")
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
+                            .foregroundColor(ModernColors.textSecondary)
+                    }
                 )
 
                 Spacer()
 
-                VStack(alignment: .trailing, spacing: 4) {
-                    ForEach(Array(dataManager.processes.prefix(5).enumerated()), id: \.element.id) { index, process in
-                        HStack(spacing: 6) {
-                            Text(process.command)
-                                .font(.system(size: 10, weight: .medium, design: .monospaced))
-                                .foregroundColor(ModernColors.textPrimary)
-                                .lineLimit(1)
-
-                            Text(String(format: "%.0f%%", process.cpuUsage))
-                                .font(.system(size: 10, weight: .semibold, design: .monospaced))
-                                .foregroundColor(ModernColors.heatColor(percentage: process.cpuUsage))
-                        }
-                    }
+                VStack(alignment: .trailing, spacing: 6) {
+                    miniStatRow(label: "Read", value: diskThroughput.formattedReadSpeed, color: ModernColors.statusLow)
+                    miniStatRow(label: "Write", value: diskThroughput.formattedWriteSpeed, color: ModernColors.statusHigh)
+                    miniStatRow(label: "Read IOPS", value: "\(diskThroughput.readIOPS)", color: ModernColors.cyan)
+                    miniStatRow(label: "Write IOPS", value: "\(diskThroughput.writeIOPS)", color: ModernColors.purple)
                 }
             }
+
             Spacer(minLength: 0)
         }
         .frame(height: 220, alignment: .top)
         .glassCard()
         .onTapGesture {
-            selectedCard = .topCPU
+            selectedCard = .diskThroughput
         }
     }
 

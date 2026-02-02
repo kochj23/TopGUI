@@ -65,8 +65,8 @@ struct CardDetailView: View {
             memoryDetailView
         case .loadAverages:
             loadAveragesDetailView
-        case .topCPU:
-            topCPUDetailView
+        case .diskThroughput:
+            diskThroughputDetailView
         case .topMemory:
             topMemoryDetailView
         case .swap:
@@ -93,7 +93,7 @@ struct CardDetailView: View {
         case .cpu: return "CPU & GPU Usage Details"
         case .memory: return "Memory Details"
         case .loadAverages: return "Load Averages"
-        case .topCPU: return "Top CPU Processes"
+        case .diskThroughput: return "Disk Throughput"
         case .topMemory: return "Top Memory Processes"
         case .swap: return "Swap Activity"
         case .states: return "Process States"
@@ -111,7 +111,7 @@ struct CardDetailView: View {
         case .cpu: return "Real-time CPU and GPU statistics"
         case .memory: return "Physical memory breakdown"
         case .loadAverages: return "System load over time"
-        case .topCPU: return "Most CPU-intensive processes"
+        case .diskThroughput: return "Real-time disk I/O speeds"
         case .topMemory: return "Most memory-intensive processes"
         case .swap: return "Virtual memory paging"
         case .states: return "Process state breakdown"
@@ -295,45 +295,84 @@ struct CardDetailView: View {
         }
     }
 
-    // MARK: - Top CPU Detail View
-    private var topCPUDetailView: some View {
+    // MARK: - Disk Throughput Detail View
+    @ObservedObject private var diskThroughput = DiskThroughputService.shared
+
+    private var diskThroughputDetailView: some View {
         VStack(spacing: 16) {
-            let top5Total = dataManager.processes.prefix(5).reduce(0.0) { $0 + $1.cpuUsage }
-
-            HStack(spacing: 20) {
-                CircularGauge(
-                    value: min(top5Total, 100.0),
-                    color: ModernColors.orange,
-                    size: 150,
-                    lineWidth: 15,
-                    showValue: true,
-                    label: "top 5"
-                )
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Top 10 CPU Processes")
-                        .font(.system(size: 14, weight: .semibold, design: .rounded))
-                        .foregroundColor(ModernColors.textSecondary)
-
-                    ForEach(Array(dataManager.processes.prefix(10).enumerated()), id: \.element.id) { index, process in
-                        HStack {
-                            Text("\(index + 1).")
-                                .font(.system(size: 12, weight: .bold, design: .monospaced))
-                                .foregroundColor(ModernColors.textTertiary)
-                                .frame(width: 30, alignment: .trailing)
-
-                            Text(process.command)
-                                .font(.system(size: 12, design: .monospaced))
+            // Read/Write speed gauges
+            HStack(spacing: 30) {
+                // Read gauge
+                VStack(spacing: 12) {
+                    CircularGauge(
+                        value: min(diskThroughput.readMBps / 5.0, 100.0),
+                        color: ModernColors.statusLow,
+                        size: 120,
+                        lineWidth: 12,
+                        showValue: false
+                    )
+                    .overlay(
+                        VStack(spacing: 4) {
+                            Text(diskThroughput.formattedReadSpeed)
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
                                 .foregroundColor(ModernColors.textPrimary)
-
-                            Spacer()
-
-                            Text(String(format: "%.1f%%", process.cpuUsage))
-                                .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                                .foregroundColor(ModernColors.heatColor(percentage: process.cpuUsage))
+                            Text("Read")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundColor(ModernColors.textSecondary)
                         }
-                    }
+                    )
+
+                    Text("\(diskThroughput.readIOPS) IOPS")
+                        .font(.system(size: 14, weight: .semibold, design: .monospaced))
+                        .foregroundColor(ModernColors.statusLow)
                 }
+
+                // Write gauge
+                VStack(spacing: 12) {
+                    CircularGauge(
+                        value: min(diskThroughput.writeMBps / 5.0, 100.0),
+                        color: ModernColors.statusHigh,
+                        size: 120,
+                        lineWidth: 12,
+                        showValue: false
+                    )
+                    .overlay(
+                        VStack(spacing: 4) {
+                            Text(diskThroughput.formattedWriteSpeed)
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
+                                .foregroundColor(ModernColors.textPrimary)
+                            Text("Write")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundColor(ModernColors.textSecondary)
+                        }
+                    )
+
+                    Text("\(diskThroughput.writeIOPS) IOPS")
+                        .font(.system(size: 14, weight: .semibold, design: .monospaced))
+                        .foregroundColor(ModernColors.statusHigh)
+                }
+            }
+            .glassCard()
+
+            // Totals and activity
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Session Statistics")
+                    .modernHeader(size: .small)
+
+                detailRow(label: "Total Read", value: String(format: "%.2f GB", diskThroughput.totalReadGB), color: ModernColors.statusLow)
+                detailRow(label: "Total Written", value: String(format: "%.2f GB", diskThroughput.totalWriteGB), color: ModernColors.statusHigh)
+                detailRow(label: "Combined Throughput", value: diskThroughput.formattedCombinedSpeed, color: ModernColors.orange)
+                detailRow(label: "Activity Level", value: diskThroughput.activityLevel.label, color: Color(hex: diskThroughput.activityLevel.color))
+            }
+            .glassCard()
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text("About Disk Throughput")
+                    .modernHeader(size: .small)
+
+                Text("Monitors real-time disk I/O operations. Read speed indicates data being loaded from disk. Write speed shows data being saved. IOPS (I/O Operations Per Second) measures disk transaction rate.")
+                    .font(.system(size: 13, design: .rounded))
+                    .foregroundColor(ModernColors.textSecondary)
             }
             .glassCard()
         }
