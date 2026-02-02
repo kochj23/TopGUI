@@ -18,8 +18,8 @@ class DiskThroughputService: ObservableObject {
     @Published var writeMBps: Double = 0.0          // Write speed MB/s
     @Published var readIOPS: Int = 0                // Read operations per second
     @Published var writeIOPS: Int = 0               // Write operations per second
-    @Published var totalReadGB: Double = 0.0        // Total data read since boot
-    @Published var totalWriteGB: Double = 0.0       // Total data written since boot
+    @Published var totalReadGB: Double = 0.0        // Total data read this session
+    @Published var totalWriteGB: Double = 0.0       // Total data written this session
     @Published var lastUpdated: Date = Date()
 
     // Historical data for sparkline
@@ -29,27 +29,20 @@ class DiskThroughputService: ObservableObject {
     private var updateTimer: Timer?
     private let historyLimit = 30
 
-    // Previous values for calculating delta
-    private var prevReadBytes: UInt64 = 0
-    private var prevWriteBytes: UInt64 = 0
-    private var prevReadOps: UInt64 = 0
-    private var prevWriteOps: UInt64 = 0
-    private var lastSampleTime: Date?
-
     private init() {
         startMonitoring()
     }
 
     func startMonitoring() {
-        // Initial sample
-        sampleDiskStats()
-
         // Update every 2 seconds
         updateTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 self?.updateThroughput()
             }
         }
+
+        // Initial update
+        updateThroughput()
     }
 
     func stopMonitoring() {
@@ -57,63 +50,43 @@ class DiskThroughputService: ObservableObject {
         updateTimer = nil
     }
 
-    private func sampleDiskStats() {
-        let stats = getDiskIOStats()
-        prevReadBytes = stats.readBytes
-        prevWriteBytes = stats.writeBytes
-        prevReadOps = stats.readOps
-        prevWriteOps = stats.writeOps
-        lastSampleTime = Date()
-    }
-
     private func updateThroughput() {
         let stats = getDiskIOStats()
-        let now = Date()
 
-        if let lastTime = lastSampleTime {
-            let elapsed = now.timeIntervalSince(lastTime)
-            if elapsed > 0 {
-                // Calculate throughput
-                let readDelta = stats.readBytes > prevReadBytes ? stats.readBytes - prevReadBytes : 0
-                let writeDelta = stats.writeBytes > prevWriteBytes ? stats.writeBytes - prevWriteBytes : 0
-                let readOpsDelta = stats.readOps > prevReadOps ? stats.readOps - prevReadOps : 0
-                let writeOpsDelta = stats.writeOps > prevWriteOps ? stats.writeOps - prevWriteOps : 0
+        // iostat gives us combined throughput - estimate read/write split
+        // Typically system I/O is ~60% reads, ~40% writes
+        let totalMBps = stats.totalMBps
+        let totalTPS = stats.totalTPS
 
-                readMBps = Double(readDelta) / elapsed / 1_048_576.0
-                writeMBps = Double(writeDelta) / elapsed / 1_048_576.0
-                readIOPS = Int(Double(readOpsDelta) / elapsed)
-                writeIOPS = Int(Double(writeOpsDelta) / elapsed)
+        readMBps = totalMBps * 0.6
+        writeMBps = totalMBps * 0.4
+        readIOPS = Int(Double(totalTPS) * 0.6)
+        writeIOPS = Int(Double(totalTPS) * 0.4)
 
-                // Total since boot (in GB)
-                totalReadGB = Double(stats.readBytes) / 1_073_741_824.0
-                totalWriteGB = Double(stats.writeBytes) / 1_073_741_824.0
+        // Accumulate session totals (every 2 seconds)
+        totalReadGB += (readMBps * 2.0) / 1024.0
+        totalWriteGB += (writeMBps * 2.0) / 1024.0
 
-                // Update history
-                readHistory.append(readMBps)
-                if readHistory.count > historyLimit {
-                    readHistory.removeFirst()
-                }
-
-                writeHistory.append(writeMBps)
-                if writeHistory.count > historyLimit {
-                    writeHistory.removeFirst()
-                }
-            }
+        // Update history
+        readHistory.append(readMBps)
+        if readHistory.count > historyLimit {
+            readHistory.removeFirst()
         }
 
-        prevReadBytes = stats.readBytes
-        prevWriteBytes = stats.writeBytes
-        prevReadOps = stats.readOps
-        prevWriteOps = stats.writeOps
-        lastSampleTime = now
-        lastUpdated = now
+        writeHistory.append(writeMBps)
+        if writeHistory.count > historyLimit {
+            writeHistory.removeFirst()
+        }
+
+        lastUpdated = Date()
     }
 
-    private func getDiskIOStats() -> (readBytes: UInt64, writeBytes: UInt64, readOps: UInt64, writeOps: UInt64) {
-        // Use iostat to get disk statistics
+    private func getDiskIOStats() -> (totalMBps: Double, totalTPS: Int) {
+        // Use iostat to get current disk statistics
+        // -d = disk stats only, -c 2 = 2 samples (use second for current rate)
         let task = Process()
-        task.launchPath = "/usr/sbin/iostat"
-        task.arguments = ["-d", "-c", "1"]
+        task.executableURL = URL(fileURLWithPath: "/usr/sbin/iostat")
+        task.arguments = ["-d", "-c", "2"]
 
         let pipe = Pipe()
         task.standardOutput = pipe
@@ -128,64 +101,72 @@ class DiskThroughputService: ObservableObject {
                 return parseIOStat(output)
             }
         } catch {
-            // Fallback to reading from sysctl or /proc equivalent
+            print("iostat error: \(error)")
         }
 
-        return (0, 0, 0, 0)
+        return (0, 0)
     }
 
-    private func parseIOStat(_ output: String) -> (readBytes: UInt64, writeBytes: UInt64, readOps: UInt64, writeOps: UInt64) {
-        // Parse iostat output
-        // Format: device KB/t tps MB/s
-        let lines = output.components(separatedBy: "\n")
-        var totalReadMB: Double = 0
-        var totalWriteMB: Double = 0
-        var totalOps: UInt64 = 0
+    private func parseIOStat(_ output: String) -> (totalMBps: Double, totalTPS: Int) {
+        // iostat -d -c 2 output format:
+        //               disk0               disk4   ...
+        //     KB/t  tps  MB/s     KB/t  tps  MB/s   ...
+        //    13.21  447  5.77    30.85    0  0.00   ... (average since boot)
+        //     4.49  202  0.89     0.00    0  0.00   ... (current interval - USE THIS)
 
-        for line in lines {
-            let components = line.split(separator: " ").map { String($0) }
-            // Look for disk lines (disk0, disk1, etc.)
-            if components.count >= 3, components[0].hasPrefix("disk") {
-                // iostat -d shows: KB/t tps MB/s
-                if let mbps = Double(components.last ?? "0") {
-                    totalReadMB += mbps / 2  // Approximate split
-                    totalWriteMB += mbps / 2
-                }
-                if components.count >= 2, let tps = Double(components[1]) {
-                    totalOps += UInt64(tps)
-                }
-            }
+        let lines = output.components(separatedBy: "\n").filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+
+        // We need at least 4 lines: disk names, column headers, first sample, second sample
+        guard lines.count >= 4 else {
+            return (0, 0)
         }
 
-        // Convert to bytes (approximate - iostat gives rates, not totals)
-        // We'll use cumulative tracking instead
-        return (
-            UInt64(totalReadMB * 1_048_576),
-            UInt64(totalWriteMB * 1_048_576),
-            totalOps / 2,
-            totalOps / 2
-        )
+        // Use the last data line (current interval, index 3)
+        let dataLine = lines[3]
+
+        // Split by whitespace and filter empty strings
+        let values = dataLine.split(whereSeparator: { $0.isWhitespace }).map { String($0) }
+
+        var totalMBps: Double = 0
+        var totalTPS: Int = 0
+
+        // Each disk has 3 values: KB/t, tps, MB/s
+        // Process in groups of 3
+        var i = 0
+        while i + 2 < values.count {
+            // tps is at position i+1
+            if let tps = Double(values[i + 1]) {
+                totalTPS += Int(tps)
+            }
+            // MB/s is at position i+2
+            if let mbps = Double(values[i + 2]) {
+                totalMBps += mbps
+            }
+            i += 3
+        }
+
+        return (totalMBps, totalTPS)
     }
 
     // MARK: - Formatted Values
 
     var formattedReadSpeed: String {
-        if readMBps >= 1000 {
-            return String(format: "%.1f GB/s", readMBps / 1024)
-        } else if readMBps >= 1 {
-            return String(format: "%.1f MB/s", readMBps)
-        } else {
-            return String(format: "%.0f KB/s", readMBps * 1024)
-        }
+        formatSpeed(readMBps)
     }
 
     var formattedWriteSpeed: String {
-        if writeMBps >= 1000 {
-            return String(format: "%.1f GB/s", writeMBps / 1024)
-        } else if writeMBps >= 1 {
-            return String(format: "%.1f MB/s", writeMBps)
+        formatSpeed(writeMBps)
+    }
+
+    private func formatSpeed(_ mbps: Double) -> String {
+        if mbps >= 1000 {
+            return String(format: "%.1f GB/s", mbps / 1024)
+        } else if mbps >= 1 {
+            return String(format: "%.1f MB/s", mbps)
+        } else if mbps >= 0.001 {
+            return String(format: "%.0f KB/s", mbps * 1024)
         } else {
-            return String(format: "%.0f KB/s", writeMBps * 1024)
+            return "0 KB/s"
         }
     }
 
@@ -194,14 +175,7 @@ class DiskThroughputService: ObservableObject {
     }
 
     var formattedCombinedSpeed: String {
-        let combined = combinedThroughput
-        if combined >= 1000 {
-            return String(format: "%.1f GB/s", combined / 1024)
-        } else if combined >= 1 {
-            return String(format: "%.1f MB/s", combined)
-        } else {
-            return String(format: "%.0f KB/s", combined * 1024)
-        }
+        formatSpeed(combinedThroughput)
     }
 
     var activityLevel: ActivityLevel {
