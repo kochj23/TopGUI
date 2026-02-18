@@ -10,6 +10,9 @@
 
 ---
 
+![TopGUI](Screenshots/main-window.png)
+
+
 ## Overview
 
 TopGUI is a beautiful, modern system monitor for macOS featuring a CleanMyMac-inspired glassmorphic design. Every stat card is clickable for detailed analytics. Includes AI-powered insights with support for 5 cloud providers.
