@@ -1,0 +1,3 @@
+theme: jekyll-theme-cayman
+title: "TopGUI"
+description: "LCARS-inspired system monitor for macOS — Star Trek themed CPU, memory, disk, and network monitoring with real-time visualization. Built with Swift and SwiftUI."
