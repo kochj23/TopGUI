@@ -165,3 +165,17 @@ MIT License - See [LICENSE](./LICENSE) file
 **TopGUI - Beautiful System Monitoring with AI Intelligence**
 
 Copyright 2026 Jordan Koch. All rights reserved.
+
+---
+
+## More Apps by Jordan Koch
+
+| App | Description |
+|-----|-------------|
+| [NMAPScanner](https://github.com/kochj23/NMAPScanner) | Network security scanner with AI threat detection |
+| [RsyncGUI](https://github.com/kochj23/RsyncGUI) | Native macOS GUI for rsync file synchronization |
+| [ExcelExplorer](https://github.com/kochj23/ExcelExplorer) | Native macOS Excel/CSV file viewer |
+| [DotSync](https://github.com/kochj23/DotSync) | Configuration file synchronization across machines |
+| [icon-creator](https://github.com/kochj23/icon-creator) | App icon set generator for all Apple platforms |
+
+> **[View all projects](https://github.com/kochj23?tab=repositories)**
