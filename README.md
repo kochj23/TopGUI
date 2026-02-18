@@ -1,5 +1,7 @@
 # TopGUI
 
+![Build](https://github.com/kochj23/TopGUI/actions/workflows/build.yml/badge.svg)
+
 **Advanced System Monitor with AI-Powered Insights & Glassmorphic Design**
 
 ![Platform](https://img.shields.io/badge/platform-macOS%2013.0%2B-blue)
