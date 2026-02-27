@@ -142,7 +142,7 @@ struct SystemSnapshot {
 ### ✅ Deployment
 - **Local Binaries:** `/Volumes/Data/xcode/binaries/20260121-TopGUI-v3.6.0/`
 - **NAS Binaries:** `/Volumes/NAS/binaries/20260121-TopGUI-v3.6.0/`
-- **User Applications:** `/Users/kochj/Applications/TopGUI.app`
+- **User Applications:** `~/Applications/TopGUI.app`
 
 ---
 
