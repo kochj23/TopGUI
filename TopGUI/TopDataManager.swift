@@ -75,6 +75,11 @@ class TopDataManager: ObservableObject {
             if self.updateCounter % 300 == 0 {
                 self.fetchIOStat()
             }
+
+            // Sync to widget every 10 seconds to avoid excessive updates
+            if self.updateCounter % 10 == 0 {
+                self.syncToWidget()
+            }
         }
 
         // Initial fetch
@@ -85,6 +90,11 @@ class TopDataManager: ObservableObject {
         fetchNetworkStats()
         fetchSwapUsage()
         fetchGPUUsage()
+
+        // Initial widget sync after a short delay to ensure data is loaded
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+            self?.syncToWidget()
+        }
     }
 
     func stopMonitoring() {
@@ -814,5 +824,64 @@ class TopDataManager: ObservableObject {
         DispatchQueue.main.async {
             self.systemStats.gpuUsage = estimatedGPU
         }
+    }
+
+    // MARK: - Widget Data Sync
+
+    /// Sync current system stats to the widget via App Group
+    func syncToWidget() {
+        let stats = systemStats
+        let topProcess = processes.first
+
+        // Parse memory values to GB
+        let memUsedGB = parseMemoryToGB(stats.memPhysUsed)
+        let memFreeGB = parseMemoryToGB(stats.memPhysFree)
+        let memWiredGB = parseMemoryToGB(stats.memWired)
+
+        // Calculate health score
+        let cpuScore = max(0, 100 - stats.totalCPU)
+        let memScore = max(0, 100 - stats.memoryUsagePercentage)
+        let diskScore = stats.disks.isEmpty ? 50.0 : stats.disks.map { 100 - $0.percentUsed }.reduce(0, +) / Double(stats.disks.count)
+        let healthScore = (cpuScore * 0.4 + memScore * 0.3 + diskScore * 0.3)
+
+        var widgetStats = WidgetSystemStats()
+        widgetStats.cpuUsage = stats.totalCPU
+        widgetStats.memoryUsage = stats.memoryUsagePercentage
+        widgetStats.topProcessName = topProcess?.command ?? "---"
+        widgetStats.topProcessCPU = topProcess?.cpuUsage ?? 0.0
+        widgetStats.healthScore = healthScore
+        widgetStats.timestamp = Date()
+
+        // Additional details
+        widgetStats.cpuUser = stats.cpuUser
+        widgetStats.cpuSystem = stats.cpuSystem
+        widgetStats.cpuIdle = stats.cpuIdle
+        widgetStats.memUsedGB = memUsedGB
+        widgetStats.memFreeGB = memFreeGB
+        widgetStats.memWiredGB = memWiredGB
+        widgetStats.gpuUsage = stats.gpuUsage
+        widgetStats.processCount = stats.processes
+        widgetStats.runningProcesses = stats.runningProcesses
+        widgetStats.loadAvg1min = stats.loadAvg1min
+        widgetStats.loadAvg5min = stats.loadAvg5min
+        widgetStats.loadAvg15min = stats.loadAvg15min
+
+        SharedDataManager.shared.saveStats(widgetStats)
+    }
+
+    /// Helper to parse memory string to GB value
+    private func parseMemoryToGB(_ memString: String) -> Double {
+        guard !memString.isEmpty else { return 0.0 }
+        let numStr = memString.filter { $0.isNumber || $0 == "." }
+        guard let num = Double(numStr) else { return 0.0 }
+
+        if memString.contains("G") {
+            return num
+        } else if memString.contains("M") {
+            return num / 1024.0
+        } else if memString.contains("K") {
+            return num / (1024.0 * 1024.0)
+        }
+        return num
     }
 }

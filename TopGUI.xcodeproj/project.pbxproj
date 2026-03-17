@@ -12,7 +12,9 @@
 		13B14881B955E2B19B4473FB /* VoiceUnified.swift in Sources */ = {isa = PBXBuildFile; fileRef = 317048A83680CAF0C8ACB323 /* VoiceUnified.swift */; };
 		261054F9948199CE7F85792E /* SecurityUnified.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3906841C760513D6FD4818C5 /* SecurityUnified.swift */; };
 		26251AC086FA68213A258B98 /* TopGUIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6406212058129268FD61B022 /* TopGUIApp.swift */; };
+		276BF18812327C2CD107D5BB /* AIBackendStatusMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFA592F3458669F4256E1B0 /* AIBackendStatusMenu.swift */; };
 		403AD43E1E0932100B60E555 /* TopDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E203F665BEA9624788856F /* TopDataManager.swift */; };
+		576B6EF95A125C8411261945 /* AIBackendManager+Generation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0C225AFBD3515474726119 /* AIBackendManager+Generation.swift */; };
 		5A5A8F53A2374EEE3B1F8F60 /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF1726F3486B5DE7B088EAE /* CardDetailView.swift */; };
 		6B9BC5B47A588299A34F91B7 /* ModernDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1709BC378945C536D803B62C /* ModernDesign.swift */; };
 		6F9D825AE4F159DDC8390A67 /* AnalysisUnified.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FE0A1AF1A6A7DE1E97E121E /* AnalysisUnified.swift */; };
@@ -22,15 +24,48 @@
 		AE6EAA3FD8C2FF5193664D03 /* AIInsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDD0E7A879B8D39397B5837D /* AIInsightsView.swift */; };
 		B99A8B4094CE5C038574E4C5 /* UnifiedAICapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96832B5EE2C98638F8BF6DE1 /* UnifiedAICapabilities.swift */; };
 		D331F13FCE00BA14B8FEBFA7 /* AIBackendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D2F68BFBB1B32A9652AAB3 /* AIBackendManager.swift */; };
+		D4EFD1B27DDEDE75E8993724 /* AIBackendManager+Enhanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = 251B00B84683A5FB09022991 /* AIBackendManager+Enhanced.swift */; };
 		D79FB949477AA678EC5F81DB /* NotificationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9ED047097132066D0E02C9 /* NotificationNames.swift */; };
 		F359FCC74C228AA25B9BCEED /* DiskThroughputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12044BAEC501D1C1F50A8555 /* DiskThroughputService.swift */; };
 		F3E8895537AB6C8A3CCB9B83 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 349C32F1ABFDAD4C2B8E6ABF /* Assets.xcassets */; };
+		WIDGET001A /* WidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = WIDGET001F /* WidgetData.swift */; };
+		WIDGET002A /* SharedDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = WIDGET002F /* SharedDataManager.swift */; };
+		WIDGET003A /* TopGUIWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = WIDGET003F /* TopGUIWidget.swift */; };
+		WIDGET004A /* WidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = WIDGET004F /* WidgetData.swift */; };
+		WIDGET005A /* SharedDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = WIDGET005F /* SharedDataManager.swift */; };
+		WIDGET006A /* TopGUI Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = WIDGET006F /* TopGUI Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		WIDGET007P /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E5BC11AA10A64EF4D1485884 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = WIDGET010T;
+			remoteInfo = "TopGUI Widget";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		WIDGET008C /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				WIDGET006A /* TopGUI Widget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0FE0A1AF1A6A7DE1E97E121E /* AnalysisUnified.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnalysisUnified.swift; path = AICapabilities/AnalysisUnified.swift; sourceTree = "<group>"; };
 		12044BAEC501D1C1F50A8555 /* DiskThroughputService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiskThroughputService.swift; sourceTree = "<group>"; };
 		1709BC378945C536D803B62C /* ModernDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernDesign.swift; sourceTree = "<group>"; };
+		251B00B84683A5FB09022991 /* AIBackendManager+Enhanced.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "AIBackendManager+Enhanced.swift"; sourceTree = "<group>"; };
+		2AFA592F3458669F4256E1B0 /* AIBackendStatusMenu.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIBackendStatusMenu.swift; sourceTree = "<group>"; };
 		317048A83680CAF0C8ACB323 /* VoiceUnified.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VoiceUnified.swift; path = AICapabilities/VoiceUnified.swift; sourceTree = "<group>"; };
 		3458132509D7F39037749887 /* TopGUI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TopGUI.entitlements; sourceTree = "<group>"; };
 		349C32F1ABFDAD4C2B8E6ABF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -39,6 +74,7 @@
 		4E42668CF54558EA729CED63 /* TopGUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TopGUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6406212058129268FD61B022 /* TopGUIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopGUIApp.swift; sourceTree = "<group>"; };
 		6B2C7C51FA1146AC7FCE1655 /* ProcessDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessDetailView.swift; sourceTree = "<group>"; };
+		7A0C225AFBD3515474726119 /* AIBackendManager+Generation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "AIBackendManager+Generation.swift"; sourceTree = "<group>"; };
 		81E203F665BEA9624788856F /* TopDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopDataManager.swift; sourceTree = "<group>"; };
 		96832B5EE2C98638F8BF6DE1 /* UnifiedAICapabilities.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UnifiedAICapabilities.swift; path = AICapabilities/UnifiedAICapabilities.swift; sourceTree = "<group>"; };
 		9754DBFCF9EF6DED34A33716 /* ProcessInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessInfo.swift; sourceTree = "<group>"; };
@@ -49,6 +85,14 @@
 		F3D2F68BFBB1B32A9652AAB3 /* AIBackendManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIBackendManager.swift; sourceTree = "<group>"; };
 		F619F453F3DC6986076F2F8D /* ImageGenerationUnified.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ImageGenerationUnified.swift; path = AICapabilities/ImageGenerationUnified.swift; sourceTree = "<group>"; };
 		FA9ED047097132066D0E02C9 /* NotificationNames.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NotificationNames.swift; path = TopGUI/NotificationNames.swift; sourceTree = "<group>"; };
+		WIDGET001F /* WidgetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetData.swift; sourceTree = "<group>"; };
+		WIDGET002F /* SharedDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDataManager.swift; sourceTree = "<group>"; };
+		WIDGET003F /* TopGUIWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopGUIWidget.swift; sourceTree = "<group>"; };
+		WIDGET004F /* WidgetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetData.swift; sourceTree = "<group>"; };
+		WIDGET005F /* SharedDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDataManager.swift; sourceTree = "<group>"; };
+		WIDGET006F /* TopGUI Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "TopGUI Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		WIDGET009F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		WIDGET011F /* TopGUI_Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TopGUI_Widget.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -62,6 +106,16 @@
 				3906841C760513D6FD4818C5 /* SecurityUnified.swift */,
 			);
 			name = AICapabilities;
+			sourceTree = "<group>";
+		};
+		11FBBAE1CAD264EAECF0B784 /* AIBackend */ = {
+			isa = PBXGroup;
+			children = (
+				7A0C225AFBD3515474726119 /* AIBackendManager+Generation.swift */,
+				251B00B84683A5FB09022991 /* AIBackendManager+Enhanced.swift */,
+				2AFA592F3458669F4256E1B0 /* AIBackendStatusMenu.swift */,
+			);
+			name = AIBackend;
 			sourceTree = "<group>";
 		};
 		222784164CAF692D0EB6BB4B /* TopGUI */ = {
@@ -87,11 +141,14 @@
 			isa = PBXGroup;
 			children = (
 				222784164CAF692D0EB6BB4B /* TopGUI */,
+				WIDGET012G /* TopGUI Widget */,
+				WIDGET013G /* Shared */,
 				F1567067F95E64A07ED53973 /* Products */,
 				DDD0E7A879B8D39397B5837D /* AIInsightsView.swift */,
 				FA9ED047097132066D0E02C9 /* NotificationNames.swift */,
 				F3D2F68BFBB1B32A9652AAB3 /* AIBackendManager.swift */,
 				4730A655810892091D896852 /* AISystemAnalyzer.swift */,
+				11FBBAE1CAD264EAECF0B784 /* AIBackend */,
 			);
 			sourceTree = "<group>";
 		};
@@ -99,8 +156,30 @@
 			isa = PBXGroup;
 			children = (
 				4E42668CF54558EA729CED63 /* TopGUI.app */,
+				WIDGET006F /* TopGUI Widget.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		WIDGET012G /* TopGUI Widget */ = {
+			isa = PBXGroup;
+			children = (
+				WIDGET003F /* TopGUIWidget.swift */,
+				WIDGET004F /* WidgetData.swift */,
+				WIDGET005F /* SharedDataManager.swift */,
+				WIDGET009F /* Info.plist */,
+				WIDGET011F /* TopGUI_Widget.entitlements */,
+			);
+			path = "TopGUI Widget";
+			sourceTree = "<group>";
+		};
+		WIDGET013G /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				WIDGET001F /* WidgetData.swift */,
+				WIDGET002F /* SharedDataManager.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,15 +191,33 @@
 			buildPhases = (
 				91A69314CB0CF033EADF4281 /* Sources */,
 				2693E4F5E384187504F05817 /* Resources */,
+				WIDGET008C /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				WIDGET014D /* PBXTargetDependency */,
 			);
 			name = TopGUI;
 			productName = TopGUI;
 			productReference = 4E42668CF54558EA729CED63 /* TopGUI.app */;
 			productType = "com.apple.product-type.application";
+		};
+		WIDGET010T /* TopGUI Widget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = WIDGET015L /* Build configuration list for PBXNativeTarget "TopGUI Widget" */;
+			buildPhases = (
+				WIDGET016S /* Sources */,
+				WIDGET017R /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "TopGUI Widget";
+			productName = "TopGUI Widget";
+			productReference = WIDGET006F /* TopGUI Widget.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -130,6 +227,11 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					WIDGET010T = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
 			};
 			buildConfigurationList = 190989A1914F8CCB854BB3CE /* Build configuration list for PBXProject "TopGUI" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -147,6 +249,7 @@
 			projectRoot = "";
 			targets = (
 				51D6DEB2527AAB70943210D1 /* TopGUI */,
+				WIDGET010T /* TopGUI Widget */,
 			);
 		};
 /* End PBXProject section */
@@ -157,6 +260,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3E8895537AB6C8A3CCB9B83 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		WIDGET017R /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,10 +294,33 @@
 				6F9D825AE4F159DDC8390A67 /* AnalysisUnified.swift in Sources */,
 				261054F9948199CE7F85792E /* SecurityUnified.swift in Sources */,
 				F359FCC74C228AA25B9BCEED /* DiskThroughputService.swift in Sources */,
+				WIDGET001A /* WidgetData.swift in Sources */,
+				WIDGET002A /* SharedDataManager.swift in Sources */,
+				576B6EF95A125C8411261945 /* AIBackendManager+Generation.swift in Sources */,
+				D4EFD1B27DDEDE75E8993724 /* AIBackendManager+Enhanced.swift in Sources */,
+				276BF18812327C2CD107D5BB /* AIBackendStatusMenu.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		WIDGET016S /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				WIDGET003A /* TopGUIWidget.swift in Sources */,
+				WIDGET004A /* WidgetData.swift in Sources */,
+				WIDGET005A /* SharedDataManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		WIDGET014D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = WIDGET010T /* TopGUI Widget */;
+			targetProxy = WIDGET007P /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		2FA9F0C5779AA374C0F39C78 /* Release */ = {
@@ -249,10 +382,11 @@
 		902B9D13C47ECBA3B122A453 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TopGUI/TopGUI.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = TopGUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -260,7 +394,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 3.7.0;
+				MARKETING_VERSION = 3.8.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUI;
 				PRODUCT_NAME = TopGUI;
 				SDKROOT = macosx;
@@ -334,10 +468,11 @@
 		EB33341210CC3540EDB2CD95 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TopGUI/TopGUI.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 14;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = TopGUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -345,10 +480,66 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 3.7.0;
+				MARKETING_VERSION = 3.8.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUI;
 				PRODUCT_NAME = TopGUI;
 				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		WIDGET018B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "TopGUI Widget/TopGUI_Widget.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 14;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "TopGUI Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "TopGUI Widget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2026 Jordan Koch. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 3.8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUI.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		WIDGET019B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "TopGUI Widget/TopGUI_Widget.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 14;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "TopGUI Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "TopGUI Widget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2026 Jordan Koch. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 3.8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUI.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -370,6 +561,15 @@
 			buildConfigurations = (
 				902B9D13C47ECBA3B122A453 /* Debug */,
 				EB33341210CC3540EDB2CD95 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		WIDGET015L /* Build configuration list for PBXNativeTarget "TopGUI Widget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				WIDGET018B /* Debug */,
+				WIDGET019B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

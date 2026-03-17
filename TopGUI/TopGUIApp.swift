@@ -12,6 +12,10 @@ import SwiftUI
 struct TopGUIApp: App {
     @StateObject private var dataManager = TopDataManager()
 
+    init() {
+        NovaAPIServer.shared.start()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()

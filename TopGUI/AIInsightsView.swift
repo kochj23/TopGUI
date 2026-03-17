@@ -23,9 +23,7 @@ struct AIInsightsView: View {
     }
 
     private var isCurrentBackendAvailable: Bool {
-        guard let backend = AIBackendManager.shared.activeBackend else {
-            return false
-        }
+        let backend = AIBackendManager.shared.activeBackend
 
         switch backend {
         case .ollama:
@@ -48,8 +46,6 @@ struct AIInsightsView: View {
             return AIBackendManager.shared.isAWSAvailable
         case .ibmWatson:
             return AIBackendManager.shared.isIBMWatsonAvailable
-        case .auto:
-            return false
         }
     }
 
@@ -166,7 +162,7 @@ struct AIInsightsView: View {
                                 .fill(isCurrentBackendAvailable ? Color.green : Color.red)
                                 .frame(width: 8, height: 8)
 
-                            Text(AIBackendManager.shared.activeBackend?.rawValue ?? "None")
+                            Text(AIBackendManager.shared.activeBackend.rawValue)
                                 .font(.system(size: 13, weight: .medium))
 
                             Image(systemName: "chevron.down")
