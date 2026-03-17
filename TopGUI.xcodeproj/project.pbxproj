@@ -71,7 +71,7 @@
 		3458132509D7F39037749887 /* TopGUI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TopGUI.entitlements; sourceTree = "<group>"; };
 		349C32F1ABFDAD4C2B8E6ABF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3906841C760513D6FD4818C5 /* SecurityUnified.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SecurityUnified.swift; path = AICapabilities/SecurityUnified.swift; sourceTree = "<group>"; };
-		3E1C5570E0C5EA00FAAE76E9 /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NovaAPIServer.swift; sourceTree = "<absolute>"; };
+		3E1C5570E0C5EA00FAAE76E9 /* NovaAPIServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "/Volumes/Data/xcode/TopGUI/TopGUI/NovaAPIServer.swift"; sourceTree = "<absolute>"; };
 		4730A655810892091D896852 /* AISystemAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AISystemAnalyzer.swift; sourceTree = "<group>"; };
 		4E42668CF54558EA729CED63 /* TopGUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TopGUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6406212058129268FD61B022 /* TopGUIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopGUIApp.swift; sourceTree = "<group>"; };
