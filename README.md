@@ -4,7 +4,8 @@
 ![Platform](https://img.shields.io/badge/platform-macOS%2013.0%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.9-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-3.8.0-brightgreen)
+![Version](https://img.shields.io/badge/version-3.9.0-brightgreen)
+![Tests](https://img.shields.io/badge/tests-137%20passed-brightgreen)
 
 **A modern, glassmorphic system monitor for macOS with AI-powered insights, 13 interactive dashboard cards, a WidgetKit desktop widget, and local API integration.**
 
@@ -45,74 +46,42 @@ A WidgetKit extension surfaces key metrics on the macOS desktop in three sizes, 
 
 ## Architecture
 
-```
-+------------------------------------------------------------------+
-|                        TopGUI.app (SwiftUI)                      |
-|                                                                  |
-|  TopGUIApp.swift                                                 |
-|    |                                                             |
-|    +-- ContentView.swift                                         |
-|    |     4-column LazyVGrid of 13 interactive glass cards        |
-|    |     GlassmorphicBackground (floating animated blobs)        |
-|    |     Process search, sort, detail sheets                     |
-|    |                                                             |
-|    +-- TopDataManager.swift                                      |
-|    |     1-second Timer driving:                                 |
-|    |       fetchTopData()       -- top -l 1 (CPU, procs, mem)   |
-|    |       fetchPerCoreCPU()    -- sysctl hw.ncpu + parsing      |
-|    |       fetchVMStat()        -- vm_stat (page stats)          |
-|    |       fetchNetworkStats()  -- netstat (per-interface)       |
-|    |       fetchSwapUsage()     -- sysctl vm.swapusage           |
-|    |       fetchGPUUsage()      -- Metal perf counters           |
-|    |       fetchIOStat()        -- df (every 5 min)              |
-|    |     syncToWidget()  every 10s via SharedDataManager          |
-|    |                                                             |
-|    +-- DiskThroughputService.swift                               |
-|    |     2-second Timer: read/write MB/s, IOPS, session totals   |
-|    |     30-sample history ring buffer for sparklines            |
-|    |                                                             |
-|    +-- NovaAPIServer.swift                                       |
-|    |     NWListener on 127.0.0.1:37443 (loopback only)          |
-|    |     REST endpoints: /api/status, /api/ping, /api/system     |
-|    |                                                             |
-|    +-- AIBackendManager.swift + Enhanced + Generation            |
-|    |     Detects 9 backends, manages keys via Keychain           |
-|    |     Auto-fallback chain across providers                    |
-|    |                                                             |
-|    +-- AIInsightsView.swift                                      |
-|    |     4-tab AI interface: Insights | Anomalies | Optimize | QA|
-|    |                                                             |
-|    +-- EthicalAIGuardian.swift                                   |
-|    |     Content policy enforcement, violation logging            |
-|    |                                                             |
-|    +-- AICapabilities/                                           |
-|          AnalysisUnified   -- system telemetry analysis          |
-|          ImageGenerationUnified -- ComfyUI / SwarmUI / A1111    |
-|          VoiceUnified      -- speech-to-text, text-to-speech    |
-|          SecurityUnified   -- threat pattern detection           |
-|                                                                  |
-+---------------------------+--------------------------------------+
-                            |
-              App Group: group.com.jkoch.topgui
-              UserDefaults + JSON file (redundant)
-                            |
-+---------------------------+--------------------------------------+
-|                    TopGUI Widget (WidgetKit)                      |
-|                                                                  |
-|  TopGUIWidget.swift                                              |
-|    Small  -- CPU %, Memory %, Health score                       |
-|    Medium -- Gauges, top process, health status                  |
-|    Large  -- All gauges, details, process count                  |
-|                                                                  |
-|  SharedDataManager.swift  -- reads from App Group                |
-|  WidgetData.swift         -- WidgetSystemStats, HealthStatus     |
-+------------------------------------------------------------------+
+```mermaid
+graph TD
+    subgraph "TopGUI.app (SwiftUI)"
+        A[TopGUIApp] --> B[ContentView<br/>4-column grid, 13 glass cards]
+        A --> C[TopDataManager<br/>1-sec timer refresh cycle]
+        A --> D[NovaAPIServer<br/>127.0.0.1:37443]
+        A --> E[AIBackendManager<br/>9 backends, Keychain keys]
 
-+------------------------------------------------------------------+
-|                     Shared/ (both targets)                        |
-|  WidgetData.swift         -- Codable data models                 |
-|  SharedDataManager.swift  -- App Group read/write                |
-+------------------------------------------------------------------+
+        C -->|top -l 2| F[TopOutputParser<br/>CLI output parsing]
+        C -->|vm_stat| F
+        C -->|sysctl| F
+        C -->|netstat -ib| F
+        C -->|df -H| F
+        C -->|ioreg| F
+
+        G[DiskThroughputService<br/>iostat, 2-sec cycle] --> F
+
+        E --> H[AIInsightsView<br/>Insights / Anomalies / Optimize / QA]
+        E --> I[EthicalAIGuardian<br/>Content policy, violation log]
+        E --> J[AICapabilities<br/>Analysis, ImageGen, Voice, Security]
+    end
+
+    C -->|every 10s| K[SharedDataManager<br/>App Group: group.com.jkoch.topgui]
+
+    subgraph "TopGUI Widget (WidgetKit)"
+        K --> L[TopGUIWidget<br/>Small / Medium / Large]
+        L --> M[WidgetData<br/>WidgetSystemStats, HealthStatus]
+    end
+
+    subgraph "TopGUITests (XCTest, 137 tests)"
+        N[TopOutputParserTests<br/>64 unit tests] -.->|validates| F
+        O[ProcessModelTests<br/>24 model tests] -.->|validates| B
+        P[SortAndFilterTests<br/>21 functional tests] -.->|validates| B
+        Q[SecurityTests<br/>18 security tests] -.->|validates| C
+        R[IntegrationTests<br/>10 live CLI tests] -.->|validates| F
+    end
 ```
 
 ---
@@ -342,6 +311,7 @@ TopGUI/
 |   |-- TopDataManager.swift         System data collection engine
 |   |-- DiskThroughputService.swift  Disk I/O monitoring service
 |   |-- NovaAPIServer.swift          Local HTTP API (port 37443)
+|   +-- TopOutputParser.swift        Testable CLI output parsing (pure functions)
 |   |-- ModernDesign.swift           Glassmorphic theme, colors, components
 |   |-- CardDetailView.swift         Expanded detail sheets per card
 |   |-- ProcessDetailView.swift      Per-process detail view
@@ -377,6 +347,13 @@ TopGUI/
 |-- EthicalAIGuardian.swift          Content policy enforcement
 |-- AIBackendManager+EthicalGuardian.swift
 |
+|-- TopGUITests/                     XCTest suite (137 tests)
+|   |-- TopOutputParserTests.swift   Parser unit tests (64)
+|   |-- ProcessModelTests.swift      Model unit tests (24)
+|   |-- SortAndFilterTests.swift     Functional tests (21)
+|   |-- SecurityTests.swift          Security tests (18)
+|   +-- IntegrationTests.swift       Integration tests (10)
+|
 |-- Screenshots/
 |-- LICENSE                          MIT License
 |-- SECURITY.md
@@ -386,7 +363,44 @@ TopGUI/
 
 ---
 
+## Test Suite
+
+TopGUI includes a comprehensive XCTest suite with 137 tests across 5 test classes.
+
+### Test Classes
+
+| Class | Tests | Category | What It Covers |
+|-------|-------|----------|----------------|
+| TopOutputParserTests | 64 | Unit | Parsing of top, vm_stat, df, iostat, sysctl output; percentage/number/memory extraction; size conversions; health score calculation; speed formatting |
+| ProcessModelTests | 24 | Unit | ProcessInfo equality and identity; SystemStats computed properties (totalCPU, memoryPercentage, loadPercentage); WidgetSystemStats Codable round-trip; HealthStatus thresholds and color codes |
+| SortAndFilterTests | 21 | Functional | Process sorting by CPU, memory, PID, command; case-insensitive search filtering by command, PID, user; combined filter+sort; top-N selection; refresh interval modulo logic |
+| SecurityTests | 18 | Security | All CLI binaries use absolute paths; no shell invocation (no /bin/sh -c); PID arguments are numeric-only; parser resilience to adversarial/injection input; API server binds to loopback only; entitlements verify sandbox disabled; no hardcoded secrets |
+| IntegrationTests | 10 | Integration | Live execution of top, vm_stat, df, sysctl, iostat, netstat; parsing of real system output; end-to-end round-trip from CLI to parsed structs |
+
+### Running Tests
+
+```bash
+cd /Volumes/Data/xcode/TopGUI
+
+# Build for testing
+xcodebuild build-for-testing -scheme TopGUI -destination 'platform=macOS' \
+  -derivedDataPath ./build CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO
+
+# Run via xctest
+DYLD_LIBRARY_PATH="./build/Build/Products/Debug/TopGUI.app/Contents/MacOS" \
+  xctest ./build/Build/Products/Debug/TopGUI.app/Contents/PlugIns/TopGUITests.xctest
+```
+
+---
+
 ## Version History
+
+### v3.9.0 (May 1, 2026)
+- Added comprehensive XCTest suite: 137 tests across unit, functional, security, and integration categories
+- Extracted TopOutputParser for testable pure-function CLI parsing
+- Fixed Info.plist CFBundleShortVersionString typo and removed stale NSMainStoryboardFile key
+- Fixed unused variable compiler warning in per-core CPU generation
+- Test-mode guards prevent heavy startup work when running under XCTest
 
 ### v3.8.0 (February 4, 2026)
 - Added WidgetKit widget with Small, Medium, and Large sizes

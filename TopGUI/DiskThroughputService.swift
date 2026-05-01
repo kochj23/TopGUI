@@ -30,6 +30,7 @@ class DiskThroughputService: ObservableObject {
     private let historyLimit = 30
 
     private init() {
+        guard NSClassFromString("XCTestCase") == nil else { return }
         startMonitoring()
     }
 

@@ -22,6 +22,8 @@ class TopDataManager: ObservableObject {
     private var updateCounter: Int = 0
 
     init() {
+        // Skip heavy process launching when running inside XCTest
+        guard NSClassFromString("XCTestCase") == nil else { return }
         getCPUCoreCount()
         startMonitoring()
     }
@@ -401,7 +403,7 @@ class TopDataManager: ObservableObject {
         var coreUsages: [Double] = []
 
         // Generate per-core usage with realistic variation
-        for i in 0..<coreCount {
+        for _ in 0..<coreCount {
             // Add random variation: -20% to +40% of base
             let variation = Double.random(in: -0.2...0.4)
             let coreUsage = max(0, min(100, baseCPU * (1.0 + variation)))

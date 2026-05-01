@@ -3,7 +3,7 @@
 //  TopGUI
 //
 //  Created by Jordan Koch on 1/15/2026.
-//  Copyright © 2026 Jordan Koch. All rights reserved.
+//  Copyright (c) 2026 Jordan Koch. All rights reserved.
 //
 
 import SwiftUI
@@ -12,15 +12,27 @@ import SwiftUI
 struct TopGUIApp: App {
     @StateObject private var dataManager = TopDataManager()
 
+    /// True when running inside XCTest host -- skip heavy startup work.
+    static let isTesting: Bool = {
+        Foundation.ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil ||
+        Foundation.ProcessInfo.processInfo.environment["XCTestSessionIdentifier"] != nil ||
+        NSClassFromString("XCTestCase") != nil
+    }()
+
     init() {
+        guard !Self.isTesting else { return }
         NovaAPIServer.shared.start()
     }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(dataManager)
-                .frame(minWidth: 1600, minHeight: 900)
+            if Self.isTesting {
+                Color.clear.frame(width: 1, height: 1)
+            } else {
+                ContentView()
+                    .environmentObject(dataManager)
+                    .frame(minWidth: 1600, minHeight: 900)
+            }
         }
         .windowStyle(.hiddenTitleBar)
         .commands {

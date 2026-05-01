@@ -29,6 +29,12 @@
 		D79FB949477AA678EC5F81DB /* NotificationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9ED047097132066D0E02C9 /* NotificationNames.swift */; };
 		F359FCC74C228AA25B9BCEED /* DiskThroughputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12044BAEC501D1C1F50A8555 /* DiskThroughputService.swift */; };
 		F3E8895537AB6C8A3CCB9B83 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 349C32F1ABFDAD4C2B8E6ABF /* Assets.xcassets */; };
+		PARSER001A /* TopOutputParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = PARSER001F /* TopOutputParser.swift */; };
+		TEST001A /* TopOutputParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST001F /* TopOutputParserTests.swift */; };
+		TEST002A /* ProcessModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST002F /* ProcessModelTests.swift */; };
+		TEST003A /* SortAndFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST003F /* SortAndFilterTests.swift */; };
+		TEST004A /* SecurityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST004F /* SecurityTests.swift */; };
+		TEST005A /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST005F /* IntegrationTests.swift */; };
 		WIDGET001A /* WidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = WIDGET001F /* WidgetData.swift */; };
 		WIDGET002A /* SharedDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = WIDGET002F /* SharedDataManager.swift */; };
 		WIDGET003A /* TopGUIWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = WIDGET003F /* TopGUIWidget.swift */; };
@@ -44,6 +50,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = WIDGET010T;
 			remoteInfo = "TopGUI Widget";
+		};
+		TEST006P /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E5BC11AA10A64EF4D1485884 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 51D6DEB2527AAB70943210D1;
+			remoteInfo = TopGUI;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -95,6 +108,13 @@
 		WIDGET006F /* TopGUI Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "TopGUI Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		WIDGET009F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		WIDGET011F /* TopGUI_Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TopGUI_Widget.entitlements; sourceTree = "<group>"; };
+		PARSER001F /* TopOutputParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopOutputParser.swift; sourceTree = "<group>"; };
+		TEST001F /* TopOutputParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopOutputParserTests.swift; sourceTree = "<group>"; };
+		TEST002F /* ProcessModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessModelTests.swift; sourceTree = "<group>"; };
+		TEST003F /* SortAndFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortAndFilterTests.swift; sourceTree = "<group>"; };
+		TEST004F /* SecurityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityTests.swift; sourceTree = "<group>"; };
+		TEST005F /* IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTests.swift; sourceTree = "<group>"; };
+		TEST007F /* TopGUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TopGUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -131,6 +151,7 @@
 				6B2C7C51FA1146AC7FCE1655 /* ProcessDetailView.swift */,
 				9754DBFCF9EF6DED34A33716 /* ProcessInfo.swift */,
 				81E203F665BEA9624788856F /* TopDataManager.swift */,
+				PARSER001F /* TopOutputParser.swift */,
 				3458132509D7F39037749887 /* TopGUI.entitlements */,
 				6406212058129268FD61B022 /* TopGUIApp.swift */,
 				0D2C1DE1B1D484E08E55FF78 /* AICapabilities */,
@@ -140,10 +161,23 @@
 			path = TopGUI;
 			sourceTree = "<group>";
 		};
+		TEST008G /* TopGUITests */ = {
+			isa = PBXGroup;
+			children = (
+				TEST001F /* TopOutputParserTests.swift */,
+				TEST002F /* ProcessModelTests.swift */,
+				TEST003F /* SortAndFilterTests.swift */,
+				TEST004F /* SecurityTests.swift */,
+				TEST005F /* IntegrationTests.swift */,
+			);
+			path = TopGUITests;
+			sourceTree = "<group>";
+		};
 		22BC4EF77B613C7B0F535E71 = {
 			isa = PBXGroup;
 			children = (
 				222784164CAF692D0EB6BB4B /* TopGUI */,
+				TEST008G /* TopGUITests */,
 				WIDGET012G /* TopGUI Widget */,
 				WIDGET013G /* Shared */,
 				F1567067F95E64A07ED53973 /* Products */,
@@ -160,6 +194,7 @@
 			children = (
 				4E42668CF54558EA729CED63 /* TopGUI.app */,
 				WIDGET006F /* TopGUI Widget.appex */,
+				TEST007F /* TopGUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -222,6 +257,22 @@
 			productReference = WIDGET006F /* TopGUI Widget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		TEST009T /* TopGUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = TEST010L /* Build configuration list for PBXNativeTarget "TopGUITests" */;
+			buildPhases = (
+				TEST011S /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				TEST012D /* PBXTargetDependency */,
+			);
+			name = TopGUITests;
+			productName = TopGUITests;
+			productReference = TEST007F /* TopGUITests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -253,6 +304,7 @@
 			targets = (
 				51D6DEB2527AAB70943210D1 /* TopGUI */,
 				WIDGET010T /* TopGUI Widget */,
+				TEST009T /* TopGUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -303,6 +355,19 @@
 				D4EFD1B27DDEDE75E8993724 /* AIBackendManager+Enhanced.swift in Sources */,
 				276BF18812327C2CD107D5BB /* AIBackendStatusMenu.swift in Sources */,
 				6166B4DA106DDBEF7705A8EA /* NovaAPIServer.swift in Sources */,
+				PARSER001A /* TopOutputParser.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		TEST011S /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				TEST001A /* TopOutputParserTests.swift in Sources */,
+				TEST002A /* ProcessModelTests.swift in Sources */,
+				TEST003A /* SortAndFilterTests.swift in Sources */,
+				TEST004A /* SecurityTests.swift in Sources */,
+				TEST005A /* IntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,6 +388,11 @@
 			isa = PBXTargetDependency;
 			target = WIDGET010T /* TopGUI Widget */;
 			targetProxy = WIDGET007P /* PBXContainerItemProxy */;
+		};
+		TEST012D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 51D6DEB2527AAB70943210D1 /* TopGUI */;
+			targetProxy = TEST006P /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -389,8 +459,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TopGUI/TopGUI.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = TopGUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -398,7 +470,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 3.8.0;
+				MARKETING_VERSION = 3.9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUI;
 				PRODUCT_NAME = TopGUI;
 				SDKROOT = macosx;
@@ -475,8 +547,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TopGUI/TopGUI.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = TopGUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -484,7 +558,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 3.8.0;
+				MARKETING_VERSION = 3.9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUI;
 				PRODUCT_NAME = TopGUI;
 				SDKROOT = macosx;
@@ -498,8 +572,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = "TopGUI Widget/TopGUI_Widget.entitlements";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 14;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 15;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "TopGUI Widget/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "TopGUI Widget";
@@ -510,7 +585,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 3.8.0;
+				MARKETING_VERSION = 3.9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUI.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -526,8 +601,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = "TopGUI Widget/TopGUI_Widget.entitlements";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 14;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 15;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "TopGUI Widget/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "TopGUI Widget";
@@ -538,13 +614,47 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 3.8.0;
+				MARKETING_VERSION = 3.9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUI.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		TEST013B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TopGUI.app/Contents/MacOS/TopGUI";
+			};
+			name = Debug;
+		};
+		TEST014B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jordankoch.TopGUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TopGUI.app/Contents/MacOS/TopGUI";
 			};
 			name = Release;
 		};
@@ -574,6 +684,15 @@
 			buildConfigurations = (
 				WIDGET018B /* Debug */,
 				WIDGET019B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		TEST010L /* Build configuration list for PBXNativeTarget "TopGUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				TEST013B /* Debug */,
+				TEST014B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
