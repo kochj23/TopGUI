@@ -19,7 +19,10 @@ class TopDataManager: ObservableObject {
 
     private var updateTimer: Timer?
     private var topProcess: Process?
+    private var topPipe: Pipe?
+    private var topBuffer: String = ""
     private var updateCounter: Int = 0
+    private let backgroundQueue = DispatchQueue(label: "com.topgui.background", qos: .utility)
 
     init() {
         // Skip heavy process launching when running inside XCTest
@@ -60,22 +63,27 @@ class TopDataManager: ObservableObject {
         guard !isRunning else { return }
         isRunning = true
 
-        // Update every second for real-time data
+        // Start persistent top process on background queue
+        startPersistentTop()
+
+        // Timer for auxiliary stats — all fetches dispatched to background
         updateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let self = self else { return }
 
             self.updateCounter += 1
 
-            self.fetchTopData()
-            self.fetchPerCoreCPU()
-            self.fetchVMStat()
-            self.fetchNetworkStats()
-            self.fetchSwapUsage()
-            self.fetchGPUUsage()
+            self.backgroundQueue.async { [weak self] in
+                guard let self = self else { return }
+                self.fetchPerCoreCPU()
+                self.fetchVMStat()
+                self.fetchNetworkStats()
+                self.fetchSwapUsage()
+                self.fetchGPUUsage()
 
-            // Only fetch disk usage every 5 minutes (300 seconds)
-            if self.updateCounter % 300 == 0 {
-                self.fetchIOStat()
+                // Only fetch disk usage every 5 minutes (300 seconds)
+                if self.updateCounter % 300 == 0 {
+                    self.fetchIOStat()
+                }
             }
 
             // Sync to widget every 10 seconds to avoid excessive updates
@@ -84,14 +92,16 @@ class TopDataManager: ObservableObject {
             }
         }
 
-        // Initial fetch
-        fetchTopData()
-        fetchPerCoreCPU()
-        fetchVMStat()
-        fetchIOStat() // Fetch immediately on startup
-        fetchNetworkStats()
-        fetchSwapUsage()
-        fetchGPUUsage()
+        // Initial auxiliary fetches on background queue
+        backgroundQueue.async { [weak self] in
+            guard let self = self else { return }
+            self.fetchPerCoreCPU()
+            self.fetchVMStat()
+            self.fetchIOStat()
+            self.fetchNetworkStats()
+            self.fetchSwapUsage()
+            self.fetchGPUUsage()
+        }
 
         // Initial widget sync after a short delay to ensure data is loaded
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
@@ -104,31 +114,68 @@ class TopDataManager: ObservableObject {
         updateTimer = nil
         topProcess?.terminate()
         topProcess = nil
+        topPipe = nil
+        topBuffer = ""
         isRunning = false
     }
 
-    private func fetchTopData() {
+    /// Launch a persistent `top -l 0 -s 1` process and read its pipe continuously
+    private func startPersistentTop() {
         let process = Process()
         let pipe = Pipe()
 
         process.executableURL = URL(fileURLWithPath: "/usr/bin/top")
-        process.arguments = ["-l", "2", "-n", "30", "-o", "cpu", "-stats", "pid,command,cpu,mem,time,th,ports,mreg,rprvt,vsize,user,state"]
+        // -l 0 = continuous mode, -s 1 = 1 second interval
+        process.arguments = ["-l", "0", "-s", "1", "-n", "30", "-o", "cpu", "-stats", "pid,command,cpu,mem,time,th,ports,mreg,rprvt,vsize,user,state"]
         process.standardOutput = pipe
-        process.standardError = pipe
+        process.standardError = FileHandle.nullDevice
+
+        topProcess = process
+        topPipe = pipe
+
+        // Read output asynchronously on background queue
+        pipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
+            let data = handle.availableData
+            guard !data.isEmpty, let self = self else { return }
+
+            if let chunk = String(data: data, encoding: .utf8) {
+                self.backgroundQueue.async {
+                    self.topBuffer += chunk
+                    // Each top sample ends with an empty line after the process list.
+                    // Split on "Processes:" header to detect complete samples.
+                    self.processTopBuffer()
+                }
+            }
+        }
 
         do {
             try process.run()
-            process.waitUntilExit()
-
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            if let output = String(data: data, encoding: .utf8) {
-                parseTopOutput(output)
-            }
         } catch {
             DispatchQueue.main.async {
                 self.errorMessage = "Error running top: \(error.localizedDescription)"
             }
         }
+    }
+
+    /// Extract complete top samples from the buffer and parse the latest one
+    private func processTopBuffer() {
+        // Look for the start of the next sample ("Processes:") to know the previous is complete
+        let marker = "Processes:"
+        let components = topBuffer.components(separatedBy: marker)
+
+        // Need at least 3 parts: first (possibly empty), current complete sample, start of next
+        // Keep only the latest complete sample
+        guard components.count >= 3 else { return }
+
+        // The last component is an incomplete sample still being written
+        // The second-to-last is the most recent complete sample
+        let latestComplete = marker + components[components.count - 2]
+
+        // Keep the incomplete part in buffer
+        topBuffer = marker + components[components.count - 1]
+
+        // Parse on background, update on main
+        parseTopOutput(latestComplete)
     }
 
     private func parseTopOutput(_ output: String) {
@@ -353,41 +400,39 @@ class TopDataManager: ObservableObject {
 
     // Process management functions
     func killProcess(_ process: ProcessInfo) {
-        let killProcess = Process()
-        killProcess.executableURL = URL(fileURLWithPath: "/bin/kill")
-        killProcess.arguments = ["-9", "\(process.pid)"]
+        backgroundQueue.async { [weak self] in
+            let killProcess = Process()
+            killProcess.executableURL = URL(fileURLWithPath: "/bin/kill")
+            killProcess.arguments = ["-9", "\(process.pid)"]
 
-        do {
-            try killProcess.run()
-            killProcess.waitUntilExit()
-
-            // Refresh data after killing
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.fetchTopData()
-            }
-        } catch {
-            DispatchQueue.main.async {
-                self.errorMessage = "Failed to kill process \(process.pid): \(error.localizedDescription)"
+            do {
+                try killProcess.run()
+                killProcess.waitUntilExit()
+                // Persistent top process will automatically reflect the change
+                // in its next 1-second sample — no manual refresh needed.
+            } catch {
+                DispatchQueue.main.async {
+                    self?.errorMessage = "Failed to kill process \(process.pid): \(error.localizedDescription)"
+                }
             }
         }
     }
 
     func changeProcessPriority(_ process: ProcessInfo, nice: Int) {
-        let reniceProcess = Process()
-        reniceProcess.executableURL = URL(fileURLWithPath: "/usr/bin/renice")
-        reniceProcess.arguments = ["\(nice)", "\(process.pid)"]
+        backgroundQueue.async { [weak self] in
+            let reniceProcess = Process()
+            reniceProcess.executableURL = URL(fileURLWithPath: "/usr/bin/renice")
+            reniceProcess.arguments = ["\(nice)", "\(process.pid)"]
 
-        do {
-            try reniceProcess.run()
-            reniceProcess.waitUntilExit()
-
-            // Refresh data
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.fetchTopData()
-            }
-        } catch {
-            DispatchQueue.main.async {
-                self.errorMessage = "Failed to change priority for process \(process.pid): \(error.localizedDescription)"
+            do {
+                try reniceProcess.run()
+                reniceProcess.waitUntilExit()
+                // Persistent top process will automatically reflect the change
+                // in its next 1-second sample — no manual refresh needed.
+            } catch {
+                DispatchQueue.main.async {
+                    self?.errorMessage = "Failed to change priority for process \(process.pid): \(error.localizedDescription)"
+                }
             }
         }
     }
@@ -396,10 +441,16 @@ class TopDataManager: ObservableObject {
     private func fetchPerCoreCPU() {
         // macOS doesn't easily expose per-core CPU via command line
         // Generate realistic per-core data based on overall CPU with variation
-        let coreCount = self.systemStats.cpuCores
+        // Capture values safely — this runs on backgroundQueue
+        var coreCount = 0
+        var baseCPU = 0.0
+        // Read @Published values on main thread
+        DispatchQueue.main.sync {
+            coreCount = self.systemStats.cpuCores
+            baseCPU = self.systemStats.totalCPU
+        }
         guard coreCount > 0 else { return }
 
-        let baseCPU = self.systemStats.totalCPU
         var coreUsages: [Double] = []
 
         // Generate per-core usage with realistic variation
@@ -414,6 +465,12 @@ class TopDataManager: ObservableObject {
             self.systemStats.perCoreCPU = coreUsages
         }
     }
+
+    // MARK: - Auxiliary System Stats
+    // NOTE: vm_stat, netstat, sysctl, ioreg, and df cannot be consolidated into a single
+    // process because each is a separate system utility with distinct output formats and
+    // data sources (Mach VM subsystem, BSD network stack, sysctl MIB, IOKit registry,
+    // VFS filesystem stats). All run on backgroundQueue to prevent UI freezes.
 
     // MARK: - VM Stat (Memory Pressure)
     private func fetchVMStat() {
@@ -790,13 +847,16 @@ class TopDataManager: ObservableObject {
         // Fallback: Estimate GPU usage based on system metrics
         // This is a rough approximation since we can't access real GPU metrics without sudo
 
-        // Strategy: Look at GPU-intensive processes (WindowServer, kernel_task, GPU-heavy apps)
-        // and estimate based on their CPU usage and known GPU usage patterns
+        // Capture process list safely from main thread
+        var processesCopy: [ProcessInfo] = []
+        DispatchQueue.main.sync {
+            processesCopy = self.processes
+        }
 
         var estimatedGPU: Double = 0.0
 
         // Check for WindowServer (macOS window compositor - always uses GPU)
-        let windowServerProcess = self.processes.first { $0.command.contains("WindowServer") }
+        let windowServerProcess = processesCopy.first { $0.command.contains("WindowServer") }
         if let ws = windowServerProcess {
             // WindowServer CPU usage often correlates with GPU usage
             // Rough estimate: GPU = WindowServer CPU * 1.5 (since GPU does most rendering)
@@ -804,7 +864,7 @@ class TopDataManager: ObservableObject {
         }
 
         // Check for other GPU-intensive processes
-        let gpuIntensiveApps = self.processes.filter {
+        let gpuIntensiveApps = processesCopy.filter {
             $0.command.contains("Safari") ||
             $0.command.contains("Chrome") ||
             $0.command.contains("Final Cut") ||
