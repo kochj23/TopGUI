@@ -35,6 +35,7 @@
 		TEST003A /* SortAndFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST003F /* SortAndFilterTests.swift */; };
 		TEST004A /* SecurityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST004F /* SecurityTests.swift */; };
 		TEST005A /* IntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST005F /* IntegrationTests.swift */; };
+		TEST006A /* ComprehensiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST006F /* ComprehensiveTests.swift */; };
 		WIDGET001A /* WidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = WIDGET001F /* WidgetData.swift */; };
 		WIDGET002A /* SharedDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = WIDGET002F /* SharedDataManager.swift */; };
 		WIDGET003A /* TopGUIWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = WIDGET003F /* TopGUIWidget.swift */; };
@@ -114,6 +115,7 @@
 		TEST003F /* SortAndFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortAndFilterTests.swift; sourceTree = "<group>"; };
 		TEST004F /* SecurityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityTests.swift; sourceTree = "<group>"; };
 		TEST005F /* IntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationTests.swift; sourceTree = "<group>"; };
+		TEST006F /* ComprehensiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComprehensiveTests.swift; sourceTree = "<group>"; };
 		TEST007F /* TopGUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TopGUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -164,6 +166,7 @@
 		TEST008G /* TopGUITests */ = {
 			isa = PBXGroup;
 			children = (
+				TEST006F /* ComprehensiveTests.swift */,
 				TEST001F /* TopOutputParserTests.swift */,
 				TEST002F /* ProcessModelTests.swift */,
 				TEST003F /* SortAndFilterTests.swift */,
@@ -363,6 +366,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				TEST006A /* ComprehensiveTests.swift in Sources */,
 				TEST001A /* TopOutputParserTests.swift in Sources */,
 				TEST002A /* ProcessModelTests.swift in Sources */,
 				TEST003A /* SortAndFilterTests.swift in Sources */,
