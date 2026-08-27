@@ -42,14 +42,32 @@ class NovaAPIServer {
             }
         }
     }
+    /// Path to the cached process list, kept in the app's user-owned Application Support
+    /// directory instead of the world-writable, predictable /tmp path, where a local user could
+    /// pre-create or symlink the file and have the server disclose its contents.
+    private var cachedProcsURL: URL {
+        let fm = FileManager.default
+        let base = (try? fm.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true))
+            ?? fm.temporaryDirectory
+        let dir = base.appendingPathComponent("TopGUI", isDirectory: true)
+        try? fm.createDirectory(at: dir, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
+        return dir.appendingPathComponent("nova_procs.txt")
+    }
+
+    /// Read the cached process list, enforcing owner-only (0600) perms on the file if present.
+    private func readCachedProcs() -> String {
+        let url = cachedProcsURL
+        try? FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
+        return (try? String(contentsOf: url)) ?? "[]"
+    }
+
     private func route(_ req: NovaRequest) async -> String {
-        if req.method == "OPTIONS" { return http(200, "") }
         switch (req.method, req.path) {
         case ("GET", "/api/status"):
             return json(200, ["status": "running", "app": "TopGUI", "version": "1.0", "port": "\(port)", "uptimeSeconds": Int(Date().timeIntervalSince(startTime))] as [String: Any])
         case ("GET", "/api/processes"):
-            // TopDataManager is view-bound; use ps to get process list
-            let output = (try? String(contentsOf: URL(fileURLWithPath: "/tmp/nova_topgui_procs.txt"))) ?? "[]"
+            // TopDataManager is view-bound; read the cached process list from Application Support
+            let output = readCachedProcs()
             return json(200, ["processes_note": "Use /api/system for live stats", "cached_output": output] as [String: Any])
 
         case ("GET", "/api/system"):
@@ -82,5 +100,8 @@ class NovaAPIServer {
     }
     private func json(_ s: Int, _ d: [String: Any]) -> String { guard let data = try? JSONSerialization.data(withJSONObject: d, options: .prettyPrinted), let body = String(data: data, encoding: .utf8) else { return http(500, "") }; return http(s, body, "application/json") }
     private func jsonArray(_ s: Int, _ a: [[String: Any]]) -> String { guard let data = try? JSONSerialization.data(withJSONObject: a, options: .prettyPrinted), let body = String(data: data, encoding: .utf8) else { return http(500, "") }; return http(s, body, "application/json") }
-    private func http(_ s: Int, _ body: String, _ ct: String = "text/plain") -> String { let st = [200:"OK",201:"Created",400:"Bad Request",404:"Not Found",500:"Internal Server Error"][s] ?? "Unknown"; return "HTTP/1.1 \(s) \(st)\r\nContent-Type: \(ct); charset=utf-8\r\nContent-Length: \(body.utf8.count)\r\nAccess-Control-Allow-Origin: *\r\nConnection: close\r\n\r\n\(body)" }
+    // No Access-Control-Allow-Origin: loopback-only API for native clients (which ignore CORS).
+    // A wildcard ACAO would let any website the user visits read these responses; omitting it
+    // stops cross-origin browser reads.
+    private func http(_ s: Int, _ body: String, _ ct: String = "text/plain") -> String { let st = [200:"OK",201:"Created",400:"Bad Request",404:"Not Found",500:"Internal Server Error"][s] ?? "Unknown"; return "HTTP/1.1 \(s) \(st)\r\nContent-Type: \(ct); charset=utf-8\r\nContent-Length: \(body.utf8.count)\r\nConnection: close\r\n\r\n\(body)" }
 }
